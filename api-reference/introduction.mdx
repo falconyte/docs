@@ -1,33 +1,40 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'Falconyte Public API'
+description: 'Overview of the Falconyte Public API, including authentication requirements and available endpoint categories.'
 ---
 
 <Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
+  The Falconyte Public API is defined by the OpenAPI specification bundled with
+  this documentation. The pages in this section are generated from that spec, so
+  any updates to `openapi.json` are reflected automatically.
 </Note>
 
 ## Welcome
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+The Falconyte Public API gives your integrations access to contacts, event
+ingestion, and webhook management features. The reference pages in this section
+are grouped by domain:
+
+- Contacts API – manage email contacts, perform bulk actions, and retrieve unsubscribe activity.
+- Events API – ingest custom lifecycle events and review automated campaign decisions.
+- Webhooks API – configure outbound webhooks, inspect delivery history, and simulate payloads.
+- Ping – simple health check endpoint.
 
 <Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
+  title="OpenAPI Specification"
+  icon="api"
+  href="/api-reference/openapi.json"
 >
-  View the OpenAPI specification file
+  Open the machine-readable schema for the Falconyte Public API.
 </Card>
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All endpoints require an API key. Include the key issued to your workspace with
+every request:
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+```http
+X-API-Key: <your-api-key>
 ```
+
+Requests without a valid key receive a `401 Unauthorized` response.
