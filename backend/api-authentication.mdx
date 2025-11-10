@@ -1,0 +1,61 @@
+---
+title: "API Authentication"
+description: "Use team API keys to access the Falconyte public API."
+icon: "key"
+---
+
+The Falconyte public API (`/public/v1`) authenticates requests with **team API keys**. Each key maps to a team scope and inherits that team's permissions, throttles, and webhook quotas.
+
+## Create a team API key
+
+1. Sign in to the Falconyte dashboard.
+2. Navigate to **Developer Tools → API Keys**.
+3. Generate a new key or rotate an existing one.
+4. Copy the token value — it is shown once and hashed at rest.
+
+> Store the token securely. Falconyte retains only a SHA-256 hash for validation, so lost keys cannot be recovered.
+
+## Send authenticated requests
+
+Include the key in the `x-api-key` header. Requests without the header (or with an expired/rotated key) return `401 Unauthorized`.
+
+```bash
+curl https://api.falconyte.com/public/v1/ping \
+  -H "x-api-key: ${FALCONYTE_API_KEY}"
+```
+
+Successful responses contain `{ "ok": true }`. This endpoint simply validates credentials; Ping does not reflect deeper service health. Expired keys return:
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "UNAUTHENTICATED",
+    "message": "Valid team API key required."
+  }
+}
+```
+
+## Key lifecycle
+
+- Keys may have an optional `expires_at`; the backend rejects expired keys automatically.
+- Every successful call updates `last_used_at` for auditing.
+- Revoke a key from the dashboard to immediately block access (the hash comparison fails, returning 401).
+
+## Testing locally
+
+Use the ping endpoint to validate credentials without impacting contact data:
+
+```bash
+curl https://api.falconyte.com/public/v1/ping \
+  -H "x-api-key: ${FALCONYTE_API_KEY}"
+```
+
+## Error handling
+
+- `401 Unauthorized` — missing or invalid key.
+- `403 Forbidden` — route-specific authorization failure (e.g., accessing another team's resources).
+- `429 Too Many Requests` — rate limit exceeded; obey `Retry-After` headers and back off.
+
+See the [API reference](/api-reference/introduction) for per-endpoint authentication notes and example payloads.
+

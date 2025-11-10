@@ -1,0 +1,50 @@
+---
+title: "Environments & Reliability"
+description: "Understand Falconyte availability, maintenance, and best practices for production use."
+icon: "screwdriver-wrench"
+---
+
+Falconyte runs on redundant infrastructure designed for high availability. Use this guide to understand release cadence, environment access, and operational best practices.
+
+## Environment profiles
+
+| Environment | Purpose | Base URL | Notes |
+| --- | --- | --- | --- |
+| Production | Live customer traffic | `https://api.falconyte.com` | Global CDN, full rate limits, monitored 24/7. |
+
+> A hosted sandbox is not available right now. Reach out to [support@falconyte.com](mailto:support@falconyte.com) to discuss alternative testing options.
+
+## Status & incident communication
+
+- **Status page**: real-time availability, incident history, and scheduled maintenance windows. Subscribe to email or webhook notifications.
+- **Release notes**: published for every major update with API changes, new headers, or response fields.
+- **Maintenance**: announced at least 7 days in advance with expected impact (if any).
+
+## Rate limiting & throughput
+
+Falconyte enforces fair-use rate limits to protect platform stability. Exact thresholds depend on your plan:
+
+- Sustained throughput: maintain consistent volumes rather than sharp spikes.
+- Burstable workloads: contact support if you expect traffic surges (imports, migrations, etc.).
+- Error code `429` includes a `Retry-After` header indicating when to retry.
+
+## Security considerations
+
+- All requests must use HTTPS; HTTP is rejected with a redirect.
+- API keys can be scoped and rotated instantly from the dashboard.
+- IP allowlists are available upon request; contact support to enable them.
+- Webhook signatures (see [webhook lifecycle](/backend/webhooks)) prevent replay and tampering.
+
+## Operational checklist
+
+- Monitor the `/public/v1/ping` endpoint to track availability from your infrastructure.
+- Log response codes and retry behavior to catch issues early.
+- Use idempotency keys (available on select endpoints) when building asynchronous workflows.
+- Coordinate release windows with Falconyte support if you operate regulated workloads.
+
+## Support
+
+- Email: [support@falconyte.com](mailto:support@falconyte.com)
+- Priority escalations: available for enterprise plans with 24/7 coverage.
+- Community: join customer office hours and product webinars to learn about upcoming features.
+

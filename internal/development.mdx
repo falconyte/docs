@@ -1,0 +1,51 @@
+---
+title: 'Internal: Docs Development'
+description: 'Working guidelines for maintaining the Falconyte documentation'
+---
+
+## Working agreements
+
+<Info>
+  Keep these notes team-internal. Nothing in this file is published to the public docs site.
+</Info>
+
+- Open a feature branch for every docs change.
+- Keep pull requests small and focused on a single topic whenever possible.
+- Include screenshots in PR descriptions when you update or add imagery.
+- Ask the docs channel in Slack when you need historical context.
+
+## Local feedback loop
+
+1. Clone the repository fresh or pull the latest `main`.
+2. Install dependencies with `npm install` (Node 20 LTS or higher recommended).
+3. Use your preferred MDX preview tooling (VS Code + MDX extension works best).
+4. Run `npm run lint` before opening a pull request.
+
+> We rely on automated preview deploys from GitHub. If you need an ad-hoc preview, open a draft PR and the pipeline will attach a link.
+
+## Deployment flow
+
+- Merges to `main` trigger an automated deployment to `https://docs.falconyte.dev/`.
+- The docs site typically updates within a few minutes once the CI checks pass.
+- If the pipeline fails, check the GitHub Actions logs and ping the Platform channel.
+
+## Style checklist
+
+- Confirm every page includes frontmatter (`title`, `description`, optional `icon`).
+- Prefer internal links that match the current navigation hierarchy.
+- Reuse snippets from `snippets/` when possible to keep terminology consistent.
+- Compress large images before committing them; aim for <400KB whenever possible.
+
+## Helpful tools
+
+- VS Code extensions:
+  - [MDX](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx)
+  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- AI assistants configured in `/ai-tools` help keep tone and structure consistent.
+
+## Troubleshooting
+
+- `npm install` fails: clear `node_modules`, delete any local lockfile, and reinstall.
+- Preview deploy missing updates: ensure the MDX file is referenced in `docs.json`.
+- Broken internal links: run a search for the slug in `docs.json` and update paths.
+- Persistent build failures: contact the docs platform owner or email [support@falconyte.com](mailto:support@falconyte.com).

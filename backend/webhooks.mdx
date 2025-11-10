@@ -1,0 +1,113 @@
+---
+title: "Webhook Lifecycle"
+description: "Create, lock, simulate, and monitor Falconyte webhooks."
+icon: "arrows-spin"
+---
+
+Falconyte webhooks deliver notifications for contact activity, campaign events, and platform automations. All endpoints live under `/public/v1/webhooks` and require a valid team API key.
+
+## Endpoints
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/public/v1/webhooks` | List webhooks for the authenticated team (paginated). |
+| `POST` | `/public/v1/webhooks` | Create a webhook. |
+| `GET` | `/public/v1/webhooks/{id}` | Retrieve a single webhook. |
+| `PATCH` | `/public/v1/webhooks/{id}` | Update URL, events, enablement, or source. |
+| `DELETE` | `/public/v1/webhooks/{id}` | Remove a webhook. |
+| `POST` | `/public/v1/webhooks/{id}/enable` | Enable delivery. |
+| `POST` | `/public/v1/webhooks/{id}/disable` | Pause delivery without deleting. |
+| `GET` | `/public/v1/webhooks/{id}/deliveries` | Paginated delivery history with response codes. |
+| `POST` | `/public/v1/webhooks/simulate` | Trigger a test event to validate receivers. |
+
+## Create a webhook
+
+1. Open the Falconyte dashboard and go to **Developer Tools → Webhooks**.
+2. Choose **Create webhook** and select the events you wish to monitor.
+3. Copy the generated secret; you will need it to verify signatures.
+
+To create webhooks programmatically:
+
+```bash
+curl https://api.falconyte.com/public/v1/webhooks \
+  -H "x-api-key: ${FALCONYTE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/falconyte-events",
+    "events": ["email.contact.saved", "email.sent"],
+    "source": "n8n"
+  }'
+```
+
+Response payloads include:
+
+| Field | Description |
+| --- | --- |
+| `secret` | Shared secret for verifying signatures. |
+| `is_enabled` | Delivery status. Defaults to `true`. |
+| `events` | Array of subscribed event names. See the event catalog in the API reference. |
+| `source` | Optional integration owner. See below. |
+| `locked` | Boolean indicating whether the webhook can be edited from the dashboard. |
+
+> Webhook URLs must be HTTPS and publicly reachable. Falconyte enforces a maximum of **10 enabled webhooks** per team; exceeding the limit returns `422` with the `MAX_WEBHOOKS_EXCEEDED` error code.
+
+## Integration-managed webhooks
+
+Set the optional `source` attribute to lock a webhook:
+
+- Accepted values: `n8n`, `zapier`, `make`, `internal`.
+- When `source` is non-null, `locked` becomes `true` and the Falconyte dashboard prevents manual edits/deletes.
+- Removing the field (or setting it to `null`) reopens the webhook for manual management.
+
+You can create and manage locked webhooks in the dashboard via **Developer Tools → Webhooks**. Webhooks created from that page display their source and lock state.
+
+## Simulation and deliveries
+
+Use the simulation endpoint to fire a test payload without waiting for live data:
+
+```bash
+curl https://api.falconyte.com/public/v1/webhooks/simulate \
+  -H "x-api-key: ${FALCONYTE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"webhook_id": "uuid", "event": "email.sent"}'
+```
+
+Delivery history includes:
+
+- Attempt timestamps and HTTP response codes
+- Retry scheduling metadata
+- Last successful delivery timestamp
+
+This information is exposed via the `/deliveries` endpoint and in the Falconyte dashboard.
+
+## Handling signatures
+
+Each delivery includes:
+
+- `X-FY-Signature`: `t=<unix_timestamp>, v1=<hmac>` where the HMAC is generated with SHA-256 using the webhook `secret` and the raw JSON body, prefixed by the timestamp.
+- `X-FY-Origin`: always `webhook`, allowing receivers to reject spoofed traffic.
+
+Validate signatures by recomputing the HMAC:
+
+```php
+[$timestampPart, $hashPart] = explode(', ', $signatureHeader);
+$timestamp = (int) str_replace('t=', '', $timestampPart);
+$received = str_replace('v1=', '', $hashPart);
+
+$expected = hash_hmac('sha256', "{$timestamp}.{$payload}", $secret);
+hash_equals($expected, $received);
+```
+
+Rotate secrets by disabling and re-enabling the webhook (a new secret is issued automatically).
+
+## Error responses
+
+| Status | Description |
+| --- | --- |
+| `401 Unauthorized` | Missing or invalid API key. |
+| `404 Not Found` | Webhook does not belong to the authenticated team. |
+| `422 Unprocessable Entity` | Validation failure (invalid URL, events array, exceeded active limit). |
+| `429 Too Many Requests` | Rate limit exceeded; retry after the interval. |
+
+For the full schema, examples, and event catalog, refer to the [API reference](/api-reference/endpoint/webhooks/index).
+

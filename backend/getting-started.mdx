@@ -1,0 +1,96 @@
+---
+title: "Getting Started"
+description: "Create an API key, choose an environment, and make your first Falconyte request."
+---
+
+Follow this guide to authenticate with Falconyte and verify connectivity in minutes.
+
+## 1. Generate an API key
+
+1. Sign in to the Falconyte dashboard.
+2. Go to **Developer Tools → API Keys**.
+3. Select **Create key**, provide a descriptive name, and copy the token shown once.
+4. Store the token securely; treat it like a password.
+
+> Each key inherits the permissions of your team. Revoke unused keys promptly to maintain security.
+
+## 2. Pick an environment
+
+| Environment | Base URL | Notes |
+| --- | --- | --- |
+| Production | `https://api.falconyte.com` | Live data, rate limits enforced. |
+
+> A dedicated sandbox is not currently available. All examples use the production domain.
+
+## 3. Verify your credentials
+
+Use the `/public/v1/ping` endpoint to confirm the API key works. This endpoint returns a simple authorization check—it does not test downstream services.
+
+```bash
+curl https://api.falconyte.com/public/v1/ping \
+  -H "x-api-key: ${FALCONYTE_API_KEY}"
+```
+
+Successful calls return:
+
+```json
+{ "ok": true }
+```
+
+Invalid or missing keys return a `401 Unauthorized` response containing an error object. See [API authentication](/backend/api-authentication) for error handling tips.
+
+## 4. Explore key endpoints
+
+| Use case | Endpoint | Description |
+| --- | --- | --- |
+| Credential validation | `GET /public/v1/ping` | Confirm that an API key is active before calling other endpoints. |
+| Sync contacts | `POST /public/v1/email/contacts/upsert` | Upsert a single contact. |
+| Bulk sync | `POST /public/v1/email/contacts/bulk-upsert` | Upsert up to 1,000 contacts in one request. |
+| Manage webhooks | `POST /public/v1/webhooks` | Create or update outbound webhook notifications. |
+
+Refer to the [API reference](/api-reference/introduction) for full schemas and response structures.
+
+## 5. Call authenticated endpoints from code
+
+JavaScript example:
+
+```bash
+curl https://api.falconyte.com/public/v1/email/contacts/upsert \
+  -H "x-api-key: ${FALCONYTE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "customer@example.com",
+    "first_name": "Ada",
+    "last_name": "Lovelace"
+  }'
+```
+
+Python example:
+
+```python
+import requests
+
+response = requests.post(
+    "https://api.falconyte.com/public/v1/email/contacts/upsert",
+    headers={
+        "x-api-key": FALCONYTE_API_KEY,
+        "Content-Type": "application/json",
+    },
+    json={
+        "email": "customer@example.com",
+        "first_name": "Ada",
+        "last_name": "Lovelace",
+    },
+    timeout=10,
+)
+response.raise_for_status()
+print(response.json())
+```
+
+All responses include an `ok` flag and relevant payload data.
+
+## 6. Next steps
+
+- Protect your credentials by restricting API keys to minimum required scopes.
+- Subscribe to status notifications to stay informed about platform events.
+- Dive into the [webhook guide](/backend/webhooks) to receive outbound events.
