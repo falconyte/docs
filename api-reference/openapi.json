@@ -1,94 +1,2639 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "Falconyte API",
+    "version": "1.0"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "http://localhost/public/v1"
     }
   ],
-  "security": [
+  "tags": [
     {
-      "bearerAuth": []
+      "name": "Events API"
+    },
+    {
+      "name": "Contacts API"
+    },
+    {
+      "name": "Webhooks API"
     }
   ],
   "paths": {
-    "/plants": {
+    "/email/contacts/upsert": {
+      "post": {
+        "operationId": "public.v1.email.contacts.upsert",
+        "description": "Creates a new contact or updates an existing one.",
+        "summary": "Upsert a single email contact",
+        "tags": [
+          "Contacts API"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Required. Email address of the contact.",
+                    "maxLength": 255
+                  },
+                  "first_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. First name of the contact.",
+                    "maxLength": 255
+                  },
+                  "last_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Last name of the contact.",
+                    "maxLength": 255
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Phone number of the contact.",
+                    "maxLength": 20
+                  },
+                  "foreign_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Foreign ID to identify the contact in your system.",
+                    "maxLength": 255
+                  },
+                  "country_code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Two-letter country code (e.g., \"US\", \"GB\").",
+                    "minLength": 2,
+                    "maxLength": 2
+                  },
+                  "custom_str_1": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Custom string field 1.",
+                    "maxLength": 255
+                  },
+                  "custom_str_2": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Custom string field 2.",
+                    "maxLength": 255
+                  },
+                  "custom_str_3": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Custom string field 3.",
+                    "maxLength": 255
+                  },
+                  "custom_str_4": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Custom string field 4.",
+                    "maxLength": 255
+                  },
+                  "custom_str_5": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Custom string field 5.",
+                    "maxLength": 255
+                  },
+                  "custom_int_1": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Optional. Custom integer field 1."
+                  },
+                  "custom_int_2": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Optional. Custom integer field 2."
+                  },
+                  "custom_int_3": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Optional. Custom integer field 3."
+                  },
+                  "custom_int_4": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Optional. Custom integer field 4."
+                  },
+                  "custom_int_5": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Optional. Custom integer field 5."
+                  },
+                  "custom_dec_1": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "Optional. Custom decimal field 1."
+                  },
+                  "custom_dec_2": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "Optional. Custom decimal field 2."
+                  },
+                  "custom_dec_3": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "Optional. Custom decimal field 3."
+                  },
+                  "custom_datetime_1": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "Optional. Custom datetime field 1."
+                  },
+                  "custom_datetime_2": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "Optional. Custom datetime field 2."
+                  },
+                  "custom_datetime_3": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "Optional. Custom datetime field 3."
+                  },
+                  "custom_bool_1": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Optional. Custom boolean field 1."
+                  },
+                  "custom_bool_2": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Optional. Custom boolean field 2."
+                  },
+                  "custom_bool_3": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Optional. Custom boolean field 3."
+                  },
+                  "tags": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "description": "Optional. Array of tags to apply to the contact.",
+                    "items": {
+                      "type": "string",
+                      "description": "Optional. Tag values must be strings with max 100 characters.",
+                      "maxLength": 100
+                    },
+                    "maxItems": 50
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "contact": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "team_id": {
+                          "type": "string"
+                        },
+                        "first_name": {
+                          "type": "string"
+                        },
+                        "last_name": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        },
+                        "foreign_id": {
+                          "type": "string"
+                        },
+                        "country_code": {
+                          "type": "string"
+                        },
+                        "is_email_valid": {
+                          "type": "string"
+                        },
+                        "validated_at": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string"
+                        },
+                        "updated_at": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "email",
+                        "team_id",
+                        "first_name",
+                        "last_name",
+                        "phone",
+                        "foreign_id",
+                        "country_code",
+                        "is_email_valid",
+                        "validated_at",
+                        "created_at",
+                        "updated_at"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "contact"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "Failed to upsert contact"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email/contacts/bulk-upsert": {
+      "post": {
+        "operationId": "public.v1.email.contacts.bulk-upsert",
+        "description": "Creates new contacts or updates existing ones. Handles multiple contacts in a single request.",
+        "summary": "Upsert multiple email contacts",
+        "tags": [
+          "Contacts API"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tags": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "description": "Optional. Array of tags to apply to all contacts.",
+                    "items": {
+                      "type": "string",
+                      "description": "Optional. Tag values must be strings with max 100 characters.",
+                      "maxLength": 100
+                    },
+                    "maxItems": 50
+                  },
+                  "contacts": {
+                    "type": "array",
+                    "description": "Required. Array of contact objects to upsert.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "Required. Email address of the contact.",
+                          "maxLength": 255
+                        },
+                        "first_name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. First name of the contact.",
+                          "maxLength": 255
+                        },
+                        "last_name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Last name of the contact.",
+                          "maxLength": 255
+                        },
+                        "phone": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Phone number of the contact.",
+                          "maxLength": 20
+                        },
+                        "foreign_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Foreign ID to identify the contact in your system.",
+                          "maxLength": 255
+                        },
+                        "country_code": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Two-letter country code (e.g., \"US\", \"GB\").",
+                          "minLength": 2,
+                          "maxLength": 2
+                        },
+                        "custom_str_1": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Custom string field 1.",
+                          "maxLength": 255
+                        },
+                        "custom_str_2": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Custom string field 2.",
+                          "maxLength": 255
+                        },
+                        "custom_str_3": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Custom string field 3.",
+                          "maxLength": 255
+                        },
+                        "custom_str_4": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Custom string field 4.",
+                          "maxLength": 255
+                        },
+                        "custom_str_5": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional. Custom string field 5.",
+                          "maxLength": 255
+                        },
+                        "custom_int_1": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Optional. Custom integer field 1."
+                        },
+                        "custom_int_2": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Optional. Custom integer field 2."
+                        },
+                        "custom_int_3": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Optional. Custom integer field 3."
+                        },
+                        "custom_int_4": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Optional. Custom integer field 4."
+                        },
+                        "custom_int_5": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Optional. Custom integer field 5."
+                        },
+                        "custom_dec_1": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "description": "Optional. Custom decimal field 1."
+                        },
+                        "custom_dec_2": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "description": "Optional. Custom decimal field 2."
+                        },
+                        "custom_dec_3": {
+                          "type": [
+                            "number",
+                            "null"
+                          ],
+                          "description": "Optional. Custom decimal field 3."
+                        },
+                        "custom_datetime_1": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time",
+                          "description": "Optional. Custom datetime field 1."
+                        },
+                        "custom_datetime_2": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time",
+                          "description": "Optional. Custom datetime field 2."
+                        },
+                        "custom_datetime_3": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time",
+                          "description": "Optional. Custom datetime field 3."
+                        },
+                        "custom_bool_1": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "description": "Optional. Custom boolean field 1."
+                        },
+                        "custom_bool_2": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "description": "Optional. Custom boolean field 2."
+                        },
+                        "custom_bool_3": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "description": "Optional. Custom boolean field 3."
+                        }
+                      },
+                      "required": [
+                        "email"
+                      ]
+                    },
+                    "minItems": 1,
+                    "maxItems": 1000
+                  }
+                },
+                "required": [
+                  "contacts"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "contacts": {
+                      "type": "string"
+                    },
+                    "count": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "contacts",
+                    "count"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "Failed to upsert contacts"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email/contacts/unsubscribe": {
+      "post": {
+        "operationId": "public.v1.email.contacts.unsubscribe",
+        "description": "Unsubscribes a contact by their email address. Can specify an optional reason.",
+        "summary": "Unsubscribe a single email contact",
+        "tags": [
+          "Contacts API"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Required. Email address to unsubscribe.",
+                    "maxLength": 255
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Reason for unsubscribing.",
+                    "maxLength": 255
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "unsubscribed_at": {
+                      "type": "string"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "email",
+                    "unsubscribed_at",
+                    "reason"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "INTERNAL_SERVER_ERROR"
+                          ]
+                        },
+                        "message": {
+                          "type": "string",
+                          "enum": [
+                            "An unexpected error occurred. Please try again later."
+                          ]
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "email",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email/contacts/bulk-unsubscribe": {
+      "post": {
+        "operationId": "public.v1.email.contacts.bulk-unsubscribe",
+        "description": "Unsubscribes multiple contacts by their email addresses. Can specify an optional reason.",
+        "summary": "Unsubscribe multiple email contacts",
+        "tags": [
+          "Contacts API"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Reason for unsubscribing.",
+                    "maxLength": 255
+                  },
+                  "emails": {
+                    "type": "array",
+                    "description": "Required. Array of email addresses to unsubscribe.",
+                    "items": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "Required. Email address must be valid with max 255 characters.",
+                      "maxLength": 255
+                    },
+                    "minItems": 1,
+                    "maxItems": 1000
+                  }
+                },
+                "required": [
+                  "emails"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "count": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "count"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/email/contacts/unsubscribes": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "operationId": "public.v1.email.contacts.unsubscribes",
+        "description": "Returns a paginated list of unsubscribed contacts for the team.",
+        "summary": "Get unsubscribed email contacts",
+        "tags": [
+          "Contacts API"
+        ],
         "parameters": [
           {
-            "name": "limit",
+            "name": "page",
             "in": "query",
-            "description": "The maximum number of results to return",
+            "description": "Optional. Page number for pagination (default: 1).",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "minimum": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Optional. Number of items per page (default: 50, max: 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Optional. Search term to filter by email address.",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "contacts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EmailContactResource"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "string"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "per_page",
+                        "total"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "contacts",
+                    "meta"
+                  ]
                 }
               }
             }
           },
-          "400": {
-            "description": "Unexpected error",
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/email/events": {
+      "post": {
+        "operationId": "public.v1.email.events.ingest.store",
+        "description": "Use this endpoint to ingest custom events.",
+        "summary": "Ingest a custom event",
+        "tags": [
+          "Events API"
+        ],
+        "requestBody": {
+          "description": "`IngestEventData`",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngestEventData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "event_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "event_id"
+                  ]
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "event_id": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "INTERNAL_SERVER_ERROR"
+                          ]
+                        },
+                        "message": {
+                          "type": "string",
+                          "enum": [
+                            "An unexpected error occurred. Please try again later."
+                          ]
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "event_id",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email/events/{event_id}": {
+      "get": {
+        "operationId": "public.v1.email.events.ingest.show",
+        "description": "Use this endpoint to get an event by ID.",
+        "summary": "Get an event by ID",
+        "tags": [
+          "Events API"
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "event": {
+                      "$ref": "#/components/schemas/IngestEventResource"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "event"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/email/events/{event_id}/decisions": {
+      "get": {
+        "operationId": "public.v1.email.events.ingest.decisions",
+        "description": "Use this endpoint to get decisions for an event.",
+        "summary": "Get decisions for an event",
+        "tags": [
+          "Events API"
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "event_id": {
+                      "type": "string"
+                    },
+                    "decisions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EventCampaignDecisionResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "event_id",
+                    "decisions"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "operationId": "public.v1.webhooks.index",
+        "description": "Returns a paginated list of all webhooks for the team.",
+        "summary": "List all webhooks",
+        "tags": [
+          "Webhooks API"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Optional. Page number for pagination (default: 1).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Optional. Number of items per page (default: 15, max: 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "webhooks": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TeamWebhookResource"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "string"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "per_page",
+                        "total"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "webhooks",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
           }
         }
       },
       "post": {
-        "description": "Creates a new plant in the store",
+        "operationId": "public.v1.webhooks.store",
+        "description": "Creates a new webhook for the team. Webhooks can be enabled or disabled during creation.",
+        "summary": "Create a new webhook",
+        "tags": [
+          "Webhooks API"
+        ],
         "requestBody": {
-          "description": "Plant to add to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Required. The URL where webhook events will be sent.",
+                    "maxLength": 2048
+                  },
+                  "is_enabled": {
+                    "type": "boolean",
+                    "description": "Optional. Whether the webhook is enabled (default: true)."
+                  },
+                  "source": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional. Indicates integration-managed webhooks. Allowed values: n8n, zapier, make, internal.",
+                    "enum": [
+                      "n8n",
+                      "zapier",
+                      "make",
+                      "internal"
+                    ]
+                  },
+                  "events": {
+                    "type": "array",
+                    "description": "Required. Array of event names to subscribe to.",
+                    "items": {
+                      "type": "string",
+                      "description": "Required. Event name must be one of the valid webhook events.",
+                      "enum": [
+                        "email.queued",
+                        "email.sent",
+                        "email.bounced.soft",
+                        "email.bounced.hard",
+                        "email.deferred",
+                        "email.opened",
+                        "email.clicked",
+                        "email.bot.opened",
+                        "email.bot.clicked",
+                        "email.replied",
+                        "email.contact.saved",
+                        "email.contact.unsubscribed",
+                        "email.lead.created",
+                        "email.sale.created"
+                      ]
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "url",
+                  "events"
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
-          "200": {
-            "description": "plant response",
+          "201": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "webhook": {
+                      "$ref": "#/components/schemas/TeamWebhookResource"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "webhook"
+                  ]
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/webhooks/{webhook}": {
+      "delete": {
+        "operationId": "public.v1.webhooks.destroy",
+        "description": "Permanently deletes a webhook from the team.",
+        "summary": "Delete a webhook",
+        "tags": [
+          "Webhooks API"
+        ],
+        "parameters": [
+          {
+            "name": "webhook",
+            "in": "path",
+            "required": true,
+            "description": "The webhook ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "public.v1.webhooks.update",
+        "description": "Allows updating webhook URL, subscribed events, and enabled status.",
+        "summary": "Update a webhook",
+        "tags": [
+          "Webhooks API"
+        ],
+        "parameters": [
+          {
+            "name": "webhook",
+            "in": "path",
+            "required": true,
+            "description": "The webhook ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048
+                  },
+                  "is_enabled": {
+                    "type": "boolean"
+                  },
+                  "source": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "n8n",
+                      "zapier",
+                      "make",
+                      "internal"
+                    ]
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "email.queued",
+                        "email.sent",
+                        "email.bounced.soft",
+                        "email.bounced.hard",
+                        "email.deferred",
+                        "email.opened",
+                        "email.clicked",
+                        "email.bot.opened",
+                        "email.bot.clicked",
+                        "email.replied",
+                        "email.contact.saved",
+                        "email.contact.unsubscribed",
+                        "email.lead.created",
+                        "email.sale.created"
+                      ]
+                    },
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "webhook": {
+                      "$ref": "#/components/schemas/TeamWebhookResource"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "webhook"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      },
+      "get": {
+        "operationId": "public.v1.webhooks.show",
+        "description": "Returns a single webhook that belongs to the authenticated team.",
+        "summary": "Show a webhook",
+        "tags": [
+          "Webhooks API"
+        ],
+        "parameters": [
+          {
+            "name": "webhook",
+            "in": "path",
+            "required": true,
+            "description": "The webhook ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "webhook": {
+                      "$ref": "#/components/schemas/TeamWebhookResource"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "webhook"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        }
+      }
+    },
+    "/webhooks/simulate": {
+      "post": {
+        "operationId": "public.v1.webhooks.simulate",
+        "description": "Returns a sample webhook payload for the specified event type.",
+        "summary": "Simulate a webhook event",
+        "tags": [
+          "Webhooks API"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event": {
+                    "type": "string",
+                    "description": "Required. The event type to simulate.",
+                    "enum": [
+                      "email.queued",
+                      "email.sent",
+                      "email.bounced.soft",
+                      "email.bounced.hard",
+                      "email.deferred",
+                      "email.opened",
+                      "email.clicked",
+                      "email.bot.opened",
+                      "email.bot.clicked",
+                      "email.replied",
+                      "email.contact.saved",
+                      "email.contact.unsubscribed",
+                      "email.lead.created",
+                      "email.sale.created"
+                    ]
+                  }
+                },
+                "required": [
+                  "event"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "event": {
+                          "type": "string"
+                        },
+                        "team_id": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string"
+                        },
+                        "payload": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "subject": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Welcome to our platform"
+                                  ]
+                                },
+                                "sent_at": {
+                                  "type": "string"
+                                },
+                                "mail_server_id": {
+                                  "type": "string"
+                                },
+                                "campaign_id": {
+                                  "type": "string"
+                                },
+                                "campaign_send_id": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "subject",
+                                "sent_at",
+                                "mail_server_id",
+                                "campaign_id",
+                                "campaign_send_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "queued_at": {
+                                  "type": "string"
+                                },
+                                "message_id": {
+                                  "type": "string",
+                                  "enum": [
+                                    "<message-id@example.com>"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "queued_at",
+                                "message_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "bounced_at": {
+                                  "type": "string"
+                                },
+                                "bounce_reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Mailbox temporarily unavailable"
+                                  ]
+                                },
+                                "message_id": {
+                                  "type": "string",
+                                  "enum": [
+                                    "<message-id@example.com>"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "bounced_at",
+                                "bounce_reason",
+                                "message_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "invalid@example.com"
+                                  ]
+                                },
+                                "bounced_at": {
+                                  "type": "string"
+                                },
+                                "bounce_reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Email address does not exist"
+                                  ]
+                                },
+                                "message_id": {
+                                  "type": "string",
+                                  "enum": [
+                                    "<message-id@example.com>"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "bounced_at",
+                                "bounce_reason",
+                                "message_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "deferred_at": {
+                                  "type": "string"
+                                },
+                                "defer_reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Server temporarily unavailable"
+                                  ]
+                                },
+                                "message_id": {
+                                  "type": "string",
+                                  "enum": [
+                                    "<message-id@example.com>"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "deferred_at",
+                                "defer_reason",
+                                "message_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "opened_at": {
+                                  "type": "string"
+                                },
+                                "ip_address": {
+                                  "type": "string",
+                                  "enum": [
+                                    "192.168.1.1"
+                                  ]
+                                },
+                                "user_agent": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                                  ]
+                                },
+                                "country_code": {
+                                  "type": "string",
+                                  "enum": [
+                                    "US"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "opened_at",
+                                "ip_address",
+                                "user_agent",
+                                "country_code"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "clicked_at": {
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "enum": [
+                                    "https://example.com/product"
+                                  ]
+                                },
+                                "ip_address": {
+                                  "type": "string",
+                                  "enum": [
+                                    "192.168.1.1"
+                                  ]
+                                },
+                                "user_agent": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                                  ]
+                                },
+                                "country_code": {
+                                  "type": "string",
+                                  "enum": [
+                                    "US"
+                                  ]
+                                },
+                                "short_link_id": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "clicked_at",
+                                "url",
+                                "ip_address",
+                                "user_agent",
+                                "country_code",
+                                "short_link_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "opened_at": {
+                                  "type": "string"
+                                },
+                                "ip_address": {
+                                  "type": "string",
+                                  "enum": [
+                                    "192.168.1.1"
+                                  ]
+                                },
+                                "user_agent": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Mozilla/5.0 (compatible; bot/1.0)"
+                                  ]
+                                },
+                                "country_code": {
+                                  "type": "string",
+                                  "enum": [
+                                    "US"
+                                  ]
+                                },
+                                "decision": {
+                                  "type": "object",
+                                  "properties": {
+                                    "is_bot": {
+                                      "type": "boolean"
+                                    },
+                                    "bot_score": {
+                                      "type": "number",
+                                      "enum": [
+                                        0.95
+                                      ]
+                                    },
+                                    "reasons": {
+                                      "type": "array",
+                                      "prefixItems": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "Automated user agent detected"
+                                          ]
+                                        },
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "Suspicious IP pattern"
+                                          ]
+                                        }
+                                      ],
+                                      "minItems": 2,
+                                      "maxItems": 2,
+                                      "additionalItems": false
+                                    }
+                                  },
+                                  "required": [
+                                    "is_bot",
+                                    "bot_score",
+                                    "reasons"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "opened_at",
+                                "ip_address",
+                                "user_agent",
+                                "country_code",
+                                "decision"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "clicked_at": {
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "enum": [
+                                    "https://example.com/product"
+                                  ]
+                                },
+                                "ip_address": {
+                                  "type": "string",
+                                  "enum": [
+                                    "192.168.1.1"
+                                  ]
+                                },
+                                "user_agent": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Mozilla/5.0 (compatible; bot/1.0)"
+                                  ]
+                                },
+                                "country_code": {
+                                  "type": "string",
+                                  "enum": [
+                                    "US"
+                                  ]
+                                },
+                                "short_link_id": {
+                                  "type": "string"
+                                },
+                                "decision": {
+                                  "type": "object",
+                                  "properties": {
+                                    "is_bot": {
+                                      "type": "boolean"
+                                    },
+                                    "bot_score": {
+                                      "type": "number",
+                                      "enum": [
+                                        0.92
+                                      ]
+                                    },
+                                    "reasons": {
+                                      "type": "array",
+                                      "prefixItems": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "Automated user agent detected"
+                                          ]
+                                        },
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "Suspicious click pattern"
+                                          ]
+                                        }
+                                      ],
+                                      "minItems": 2,
+                                      "maxItems": 2,
+                                      "additionalItems": false
+                                    }
+                                  },
+                                  "required": [
+                                    "is_bot",
+                                    "bot_score",
+                                    "reasons"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "clicked_at",
+                                "url",
+                                "ip_address",
+                                "user_agent",
+                                "country_code",
+                                "short_link_id",
+                                "decision"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "email_send_log_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "replied_at": {
+                                  "type": "string"
+                                },
+                                "message_id": {
+                                  "type": "string",
+                                  "enum": [
+                                    "<reply-message-id@example.com>"
+                                  ]
+                                },
+                                "in_reply_to": {
+                                  "type": "string",
+                                  "enum": [
+                                    "<original-message-id@example.com>"
+                                  ]
+                                },
+                                "headers": {
+                                  "type": "object",
+                                  "properties": {
+                                    "From": {
+                                      "type": "string",
+                                      "enum": [
+                                        "john.doe@example.com"
+                                      ]
+                                    },
+                                    "To": {
+                                      "type": "string",
+                                      "enum": [
+                                        "support@falconyte.com"
+                                      ]
+                                    },
+                                    "Subject": {
+                                      "type": "string",
+                                      "enum": [
+                                        "Re: Welcome to our platform"
+                                      ]
+                                    },
+                                    "Date": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "From",
+                                    "To",
+                                    "Subject",
+                                    "Date"
+                                  ]
+                                },
+                                "subject": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Re: Welcome to our platform"
+                                  ]
+                                },
+                                "content": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Thank you for the email. I have a question about..."
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "email_send_log_id",
+                                "contact_id",
+                                "email",
+                                "replied_at",
+                                "message_id",
+                                "in_reply_to",
+                                "headers",
+                                "subject",
+                                "content"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "first_name": {
+                                  "type": "string",
+                                  "enum": [
+                                    "John"
+                                  ]
+                                },
+                                "last_name": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Doe"
+                                  ]
+                                },
+                                "phone": {
+                                  "type": "string",
+                                  "enum": [
+                                    "+1234567890"
+                                  ]
+                                },
+                                "foreign_id": {
+                                  "type": "string",
+                                  "enum": [
+                                    "ext-123"
+                                  ]
+                                },
+                                "country_code": {
+                                  "type": "string",
+                                  "enum": [
+                                    "US"
+                                  ]
+                                },
+                                "created_at": {
+                                  "type": "string"
+                                },
+                                "updated_at": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "contact_id",
+                                "email",
+                                "first_name",
+                                "last_name",
+                                "phone",
+                                "foreign_id",
+                                "country_code",
+                                "created_at",
+                                "updated_at"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "unsubscribed_at": {
+                                  "type": "string"
+                                },
+                                "unsubscribe_reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "User clicked unsubscribe link"
+                                  ]
+                                },
+                                "unsubscribe_method": {
+                                  "type": "string",
+                                  "enum": [
+                                    "link"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "contact_id",
+                                "email",
+                                "unsubscribed_at",
+                                "unsubscribe_reason",
+                                "unsubscribe_method"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "lead_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "created_at": {
+                                  "type": "string"
+                                },
+                                "source": {
+                                  "type": "string",
+                                  "enum": [
+                                    "email_campaign"
+                                  ]
+                                },
+                                "campaign_id": {
+                                  "type": "string"
+                                },
+                                "campaign_send_id": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "lead_id",
+                                "contact_id",
+                                "email",
+                                "created_at",
+                                "source",
+                                "campaign_id",
+                                "campaign_send_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "sale_id": {
+                                  "type": "string"
+                                },
+                                "contact_id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "enum": [
+                                    "john.doe@example.com"
+                                  ]
+                                },
+                                "created_at": {
+                                  "type": "string"
+                                },
+                                "amount": {
+                                  "type": "number",
+                                  "enum": [
+                                    99.99
+                                  ]
+                                },
+                                "currency": {
+                                  "type": "string",
+                                  "enum": [
+                                    "USD"
+                                  ]
+                                },
+                                "source": {
+                                  "type": "string",
+                                  "enum": [
+                                    "email_campaign"
+                                  ]
+                                },
+                                "campaign_id": {
+                                  "type": "string"
+                                },
+                                "campaign_send_id": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "sale_id",
+                                "contact_id",
+                                "email",
+                                "created_at",
+                                "amount",
+                                "currency",
+                                "source",
+                                "campaign_id",
+                                "campaign_send_id"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "message": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Sample webhook payload"
+                                  ]
+                                },
+                                "timestamp": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "message",
+                                "timestamp"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "event",
+                        "team_id",
+                        "timestamp",
+                        "payload"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "payload"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/webhooks/{webhook}/deliveries": {
+      "get": {
+        "operationId": "public.v1.webhooks.deliveries",
+        "description": "Returns a paginated list of webhook deliveries with optional filtering.",
+        "summary": "Get webhook deliveries",
+        "tags": [
+          "Webhooks API"
+        ],
+        "parameters": [
+          {
+            "name": "webhook",
+            "in": "path",
+            "required": true,
+            "description": "The webhook ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "query[condition]",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AND",
+                "OR"
+              ]
+            }
+          },
+          {
+            "name": "query[type]",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "builder",
+                "segment"
+              ]
+            }
+          },
+          {
+            "name": "query[rules][]",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "columns[]",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Optional. Page number for pagination (default: 1).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Optional. Number of items per page (default: 15, max: 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "deliveries": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WebhookDeliveryResource"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "string"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "per_page",
+                        "total"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "deliveries",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/webhooks/{webhook}/enable": {
+      "post": {
+        "operationId": "public.v1.webhooks.enable",
+        "description": "Enables a disabled webhook. Checks if the team has reached the maximum of 10 active webhooks.",
+        "summary": "Enable a webhook",
+        "tags": [
+          "Webhooks API"
+        ],
+        "parameters": [
+          {
+            "name": "webhook",
+            "in": "path",
+            "required": true,
+            "description": "The webhook ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "webhook": {
+                      "$ref": "#/components/schemas/TeamWebhookResource"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "webhook"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "ALREADY_ENABLED",
+                            "MAX_WEBHOOKS_EXCEEDED",
+                            "VALIDATION_ERROR"
+                          ]
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "error"
+                  ]
                 }
               }
             }
@@ -96,57 +2641,122 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/webhooks/{webhook}/disable": {
+      "post": {
+        "operationId": "public.v1.webhooks.disable",
+        "description": "Disables an enabled webhook. The webhook will no longer receive events.",
+        "summary": "Disable a webhook",
+        "tags": [
+          "Webhooks API"
+        ],
         "parameters": [
           {
-            "name": "id",
+            "name": "webhook",
             "in": "path",
-            "description": "ID of plant to delete",
             "required": true,
+            "description": "The webhook ID",
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "webhook": {
+                      "$ref": "#/components/schemas/TeamWebhookResource"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "webhook"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "ALREADY_DISABLED"
+                          ]
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "error"
+                  ]
                 }
               }
             }
           }
         }
       }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
-        },
+    },
+    "/ping": {
+      "get": {
+        "operationId": "public.v1.ping",
+        "tags": [
+          "Ping"
+        ],
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
           }
         }
       }
@@ -154,63 +2764,563 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "EmailContactResource": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
+          "id": {
             "type": "string"
           },
-          "tag": {
-            "description": "Tag to specify the type",
+          "team_id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "hard_bounced",
+                  "invalid",
+                  "unsubscribed"
+                ]
+              }
+            ]
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "is_email_valid": {
+            "type": "string"
+          },
+          "validation_method": {
+            "type": "string"
+          },
+          "validation_reason": {
+            "type": "string"
+          },
+          "validated_at": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "unsubscribed_at": {
+            "type": "string"
+          },
+          "unsubscribed_reason": {
+            "type": "string"
+          },
+          "first_sent_at": {
+            "type": "string"
+          },
+          "last_sent_at": {
+            "type": "string"
+          },
+          "sent_count": {
+            "type": "string"
+          },
+          "first_opened_at": {
+            "type": "string"
+          },
+          "last_opened_at": {
+            "type": "string"
+          },
+          "opens_count": {
+            "type": "string"
+          },
+          "first_clicked_at": {
+            "type": "string"
+          },
+          "last_clicked_at": {
+            "type": "string"
+          },
+          "clicks_count": {
+            "type": "string"
+          },
+          "first_lead_at": {
+            "type": "string"
+          },
+          "last_lead_at": {
+            "type": "string"
+          },
+          "leads_count": {
+            "type": "string"
+          },
+          "first_sale_at": {
+            "type": "string"
+          },
+          "last_sale_at": {
+            "type": "string"
+          },
+          "sales_count": {
+            "type": "string"
+          },
+          "first_bounced_at": {
+            "type": "string"
+          },
+          "last_bounced_at": {
+            "type": "string"
+          },
+          "hard_bounces_count": {
+            "type": "string"
+          },
+          "soft_bounces_count": {
+            "type": "string"
+          },
+          "custom_str_1": {
+            "type": "string"
+          },
+          "custom_str_2": {
+            "type": "string"
+          },
+          "custom_str_3": {
+            "type": "string"
+          },
+          "custom_str_4": {
+            "type": "string"
+          },
+          "custom_str_5": {
+            "type": "string"
+          },
+          "custom_int_1": {
+            "type": "string"
+          },
+          "custom_int_2": {
+            "type": "string"
+          },
+          "custom_int_3": {
+            "type": "string"
+          },
+          "custom_int_4": {
+            "type": "string"
+          },
+          "custom_int_5": {
+            "type": "string"
+          },
+          "custom_dec_1": {
+            "type": "string"
+          },
+          "custom_dec_2": {
+            "type": "string"
+          },
+          "custom_dec_3": {
+            "type": "string"
+          },
+          "custom_datetime_1": {
+            "type": "string"
+          },
+          "custom_datetime_2": {
+            "type": "string"
+          },
+          "custom_datetime_3": {
+            "type": "string"
+          },
+          "custom_bool_1": {
+            "type": "string"
+          },
+          "custom_bool_2": {
+            "type": "string"
+          },
+          "custom_bool_3": {
+            "type": "string"
+          },
+          "country_code": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "id",
+          "team_id",
+          "email",
+          "status",
+          "first_name",
+          "last_name",
+          "is_email_valid",
+          "validation_method",
+          "validation_reason",
+          "validated_at",
+          "created_at",
+          "updated_at",
+          "unsubscribed_at",
+          "unsubscribed_reason",
+          "first_sent_at",
+          "last_sent_at",
+          "sent_count",
+          "first_opened_at",
+          "last_opened_at",
+          "opens_count",
+          "first_clicked_at",
+          "last_clicked_at",
+          "clicks_count",
+          "first_lead_at",
+          "last_lead_at",
+          "leads_count",
+          "first_sale_at",
+          "last_sale_at",
+          "sales_count",
+          "first_bounced_at",
+          "last_bounced_at",
+          "hard_bounces_count",
+          "soft_bounces_count",
+          "custom_str_1",
+          "custom_str_2",
+          "custom_str_3",
+          "custom_str_4",
+          "custom_str_5",
+          "custom_int_1",
+          "custom_int_2",
+          "custom_int_3",
+          "custom_int_4",
+          "custom_int_5",
+          "custom_dec_1",
+          "custom_dec_2",
+          "custom_dec_3",
+          "custom_datetime_1",
+          "custom_datetime_2",
+          "custom_datetime_3",
+          "custom_bool_1",
+          "custom_bool_2",
+          "custom_bool_3",
+          "country_code"
+        ],
+        "title": "EmailContactResource"
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "EventCampaignDecisionResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "UUID of event"
           },
-          {
-            "required": [
-              "id"
+          "event_id": {
+            "type": "string"
+          },
+          "event_name": {
+            "type": "string"
+          },
+          "campaign_id": {
+            "type": "string"
+          },
+          "contact_id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "decision_reason": {
+            "type": "string"
+          },
+          "template_id": {
+            "type": "string"
+          },
+          "mail_account_id": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "tracking_id": {
+            "type": "string"
+          },
+          "sent_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "event_id",
+          "event_name",
+          "campaign_id",
+          "contact_id",
+          "email",
+          "decision",
+          "decision_reason",
+          "template_id",
+          "mail_account_id",
+          "created_at",
+          "tracking_id",
+          "sent_at"
+        ],
+        "title": "EventCampaignDecisionResource"
+      },
+      "IngestEventData": {
+        "type": "object",
+        "properties": {
+          "event_name": {
+            "description": "Required. Name of the event. Must be one of: contact.saved, contact.unsubscribed, lead.created, sale.created",
+            "$ref": "#/components/schemas/IngestEventEnum"
+          },
+          "occurred_at": {
+            "type": [
+              "string",
+              "null"
             ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
+            "format": "date",
+            "description": "Optional. Timestamp when the event occurred. Format: Y-m-d H:i:s (e.g., \"2024-01-15 14:30:00\")"
+          },
+          "idempotency_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Optional. Unique idempotency key to prevent duplicate events. Must be a valid UUID.\nFor lead.created and sale.created events, this should strictly be the tracking_id value"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email",
+            "description": "Optional. Email address associated with the event. Required if idempotency_key is not provided"
+          },
+          "payload": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "description": "Optional. Additional payload data associated with the event.\nFor sale.created events, it's recommended to include an \"amount\" key for conversion amount",
+            "items": {
+              "type": "string"
             }
           }
-        ]
-      },
-      "Error": {
+        },
         "required": [
-          "error",
-          "message"
+          "event_name"
         ],
+        "title": "IngestEventData"
+      },
+      "IngestEventEnum": {
+        "type": "string",
+        "enum": [
+          "contact.saved",
+          "contact.unsubscribed",
+          "lead.created",
+          "sale.created"
+        ],
+        "title": "IngestEventEnum"
+      },
+      "IngestEventResource": {
         "type": "object",
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "id": {
+            "type": "string",
+            "description": "UUID of event"
           },
-          "message": {
+          "event_name": {
+            "type": "string"
+          },
+          "occurred_at": {
+            "type": "string"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "string"
+          },
+          "duplicate_of": {
+            "type": "string"
+          },
+          "failure_reason": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "completed_at": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "id",
+          "event_name",
+          "occurred_at",
+          "idempotency_key",
+          "email",
+          "payload",
+          "duplicate_of",
+          "failure_reason",
+          "created_at",
+          "completed_at"
+        ],
+        "title": "IngestEventResource"
+      },
+      "TeamWebhookResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "events": {
+            "type": "string"
+          },
+          "is_enabled": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "locked": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "events",
+          "is_enabled",
+          "secret",
+          "source",
+          "locked",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "TeamWebhookResource"
+      },
+      "WebhookDeliveryResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "webhook_id": {
+            "type": "string"
+          },
+          "event_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "response_code": {
+            "type": "string"
+          },
+          "response_body": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "string"
+          },
+          "last_attempt_at": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "webhook_id",
+          "event_name",
+          "status",
+          "response_code",
+          "response_body",
+          "attempts",
+          "last_attempt_at",
+          "created_at"
+        ],
+        "title": "WebhookDeliveryResource"
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+    "responses": {
+      "AuthenticationException": {
+        "description": "Unauthenticated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      },
+      "ValidationException": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Errors overview."
+                },
+                "errors": {
+                  "type": "object",
+                  "description": "A detailed description of each field that failed validation.",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": [
+                "message",
+                "errors"
+              ]
+            }
+          }
+        }
+      },
+      "ModelNotFoundException": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
       }
     }
   }
