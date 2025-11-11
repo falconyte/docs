@@ -48,12 +48,40 @@
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Contacts",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/endpoint/contacts/upsert",
+              "api-reference/endpoint/contacts/bulk-upsert",
+              "api-reference/endpoint/contacts/bulk-unsubscribe",
+              "api-reference/endpoint/contacts/unsubscribe",
+              "api-reference/endpoint/contacts/unsubscribes"
+            ]
+          },
+          {
+            "group": "Events",
+            "pages": [
+              "api-reference/endpoint/events/ingest",
+              "api-reference/endpoint/events/decisions",
+              "api-reference/endpoint/events/show"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-reference/endpoint/webhooks/index",
+              "api-reference/endpoint/webhooks/store",
+              "api-reference/endpoint/webhooks/update",
+              "api-reference/endpoint/webhooks/enable",
+              "api-reference/endpoint/webhooks/disable",
+              "api-reference/endpoint/webhooks/destroy",
+              "api-reference/endpoint/webhooks/deliveries",
+              "api-reference/endpoint/webhooks/simulate"
+            ]
+          },
+          {
+            "group": "System",
+            "pages": [
+              "api-reference/endpoint/system/ping"
             ]
           }
         ]
