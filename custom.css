@@ -1,0 +1,19 @@
+# Customize navbar branding by appending text after the logo
+#navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+#navbar-logo::after {
+  content: "Falconyte Docs";
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  color: inherit;
+}
+
+@media (max-width: 768px) {
+  #navbar-logo::after {
+    font-size: 1rem;
+  }
+}
