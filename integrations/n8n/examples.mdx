@@ -105,7 +105,7 @@ Falconyte Trigger (email.opened, email.clicked)
 
 ```
 Falconyte Trigger (email.contact.saved)
-  → IF: Has Tag "new-subscriber"
+  → IF: is_new = true
     → Wait: 5 minutes
     → Falconyte: Send Email (Welcome #1)
     → Wait: 2 days
@@ -117,9 +117,9 @@ Falconyte Trigger (email.contact.saved)
 **Configuration:**
 
 1. **Falconyte Trigger**: Subscribe to `email.contact.saved`
-2. **IF Node**: Filter for specific tags
+2. **IF Node**: Filter for newly created contacts only
    ```javascript
-   {{ $json.payload.tags && $json.payload.tags.includes('new-subscriber') }}
+   {{ $json.payload.is_new === true }}
    ```
 3. **Wait Nodes**: Add delays between emails
 4. **Falconyte Email Actions**: Send each email in sequence
@@ -132,6 +132,10 @@ Falconyte Trigger (email.contact.saved)
      }
    }
    ```
+
+<Tip>
+The `is_new` field is automatically set by Falconyte when a contact is created vs. updated. This is more reliable than tag-based filtering since it doesn't require manual tagging.
+</Tip>
 
 **Advanced Version**: Add engagement tracking
 ```
@@ -401,23 +405,28 @@ Falconyte Trigger (email.clicked)
 
 ```
 Falconyte Trigger (email.contact.saved)
-  → Clearbit: Enrich Contact
-  → Hunter.io: Verify Email
-  → FullContact: Get Social Profiles
-  → Function: Merge All Data
-  → Falconyte: Upsert Contact (with enriched data)
-  → IF: Company Size > 50
-    → Falconyte: Add "enterprise" tag
-    → Slack: Notify Enterprise Team
+  → IF: is_new = true
+    → Clearbit: Enrich Contact
+    → Hunter.io: Verify Email
+    → FullContact: Get Social Profiles
+    → Function: Merge All Data
+    → Falconyte: Upsert Contact (with enriched data)
+    → IF: Company Size > 50
+      → Falconyte: Add "enterprise" tag
+      → Slack: Notify Enterprise Team
 ```
 
 **Configuration:**
 
 1. **Falconyte Trigger**: Subscribe to `email.contact.saved`
-2. **Clearbit API**: Get company and role data
-3. **Hunter.io API**: Verify email deliverability
-4. **FullContact API**: Get social media profiles
-5. **Function Node**: Merge all enrichment data
+2. **IF Node**: Filter for newly created contacts only
+   ```javascript
+   {{ $json.payload.is_new === true }}
+   ```
+3. **Clearbit API**: Get company and role data
+4. **Hunter.io API**: Verify email deliverability
+5. **FullContact API**: Get social media profiles
+6. **Function Node**: Merge all enrichment data
    ```javascript
    return {
      email: $json.payload.email,
@@ -433,8 +442,12 @@ Falconyte Trigger (email.contact.saved)
      ]
    };
    ```
-6. **Falconyte Action**: Update contact with enriched data
-7. **Conditional Logic**: Route based on enrichment results
+7. **Falconyte Action**: Update contact with enriched data
+8. **Conditional Logic**: Route based on enrichment results
+
+<Tip>
+Only enriching new contacts (using `is_new = true`) prevents redundant API calls to enrichment services when existing contacts are updated. This saves costs and improves performance.
+</Tip>
 
 **Benefits:**
 - Automated data enrichment
