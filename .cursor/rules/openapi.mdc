@@ -1,0 +1,74 @@
+---
+alwaysApply: true
+---
+
+# OpenAPI Specification Rules
+
+## File Location
+
+- **Path**: `api-reference/openapi.json`
+- **Source**: Auto-generated from the API server
+
+## How to Update
+
+The `openapi.json` file is **auto-generated** and must be downloaded from the API. Never edit it manually.
+
+### Update Process
+
+1. Ensure the API server is running locally
+2. Download the latest specification:
+   ```bash
+   curl -s http://localhost/docs/public/v1/openapi.json -o api-reference/openapi.json
+   ```
+3. Verify the file was updated successfully
+4. Commit the updated file
+
+### When to Update
+
+Update the `openapi.json` file when:
+- New API endpoints are added
+- Existing endpoint schemas are modified (request/response structures)
+- Validation rules change
+- API documentation is updated
+- Response formats change
+
+## ❌ Forbidden Actions
+
+**DO NOT:**
+- ❌ Manually edit `openapi.json` directly
+- ❌ Use search-replace or write tools on this file
+- ❌ Add, modify, or remove properties manually
+- ❌ Fix typos or formatting manually
+- ❌ Update descriptions directly in the spec
+
+**WHY?**
+- Manual changes will be lost on the next regeneration
+- The file is auto-generated from the API server
+- Inconsistencies between code and docs lead to integration issues
+- The API server is the single source of truth
+
+## ✅ Correct Workflow
+
+If you need to change the API documentation:
+
+1. **Update the API server** - Make changes to the API implementation and documentation
+
+2. **Regenerate the spec** by downloading from the API:
+   ```bash
+   curl -s http://localhost/docs/public/v1/openapi.json -o api-reference/openapi.json
+   ```
+
+3. **Verify the changes** appear correctly in the generated spec
+
+## Related Files
+
+- Individual endpoint docs: `api-reference/endpoint/**/*.mdx`
+- These reference the OpenAPI spec using `openapi: 'POST /endpoint/path'`
+- They automatically update when the OpenAPI spec changes
+
+## Important Notes
+
+- The OpenAPI spec is the foundation for all API documentation
+- Endpoint `.mdx` files that use `openapi:` frontmatter automatically inherit schemas from this file
+- Always download the latest spec after making API changes
+- Never attempt to manually sync changes between the spec and endpoint docs

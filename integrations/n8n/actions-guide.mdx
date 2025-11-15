@@ -74,6 +74,7 @@ Falconyte supports typed custom fields:
   "contact": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "email": "john.doe@example.com",
+    "is_new": false,
     "first_name": "John",
     "last_name": "Doe",
     "created_at": "2024-01-15T10:30:00Z",
@@ -81,6 +82,10 @@ Falconyte supports typed custom fields:
   }
 }
 ```
+
+<Tip>
+The `is_new` field indicates whether the contact was newly created (`true`) or updated from an existing record (`false`). Use this in IF nodes to branch your workflow based on contact creation vs. update.
+</Tip>
 
 ### Bulk Upsert Contacts
 
@@ -114,6 +119,33 @@ Create or update multiple contacts in a single operation (up to 1,000 contacts).
     }
   ],
   "tags": ["bulk-import", "2024-q1"]
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "contacts": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "email": "user1@example.com",
+      "is_new": true,
+      "first_name": "Alice",
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440001",
+      "email": "user2@example.com",
+      "is_new": false,
+      "first_name": "Bob",
+      "created_at": "2024-01-10T08:15:00Z",
+      "updated_at": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "count": 2
 }
 ```
 

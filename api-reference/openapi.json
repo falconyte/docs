@@ -733,6 +733,9 @@
                                                 "team_id": {
                                                     "type": "string"
                                                 },
+                                                "is_new": {
+                                                    "type": "string"
+                                                },
                                                 "first_name": {
                                                     "type": "string"
                                                 },
@@ -765,6 +768,7 @@
                                                 "id",
                                                 "email",
                                                 "team_id",
+                                                "is_new",
                                                 "first_name",
                                                 "last_name",
                                                 "phone",
