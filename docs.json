@@ -23,9 +23,9 @@
           {
             "group": "Operations",
             "pages": [
-              "backend/deployment",
               "backend/api-authentication",
-              "backend/webhooks"
+              "backend/webhooks",
+              "backend/integrations"
             ]
           }
         ]
@@ -76,12 +76,44 @@
             "pages": [
               "api-reference/endpoint/webhooks/index",
               "api-reference/endpoint/webhooks/store",
+              "api-reference/endpoint/webhooks/show",
               "api-reference/endpoint/webhooks/update",
               "api-reference/endpoint/webhooks/enable",
               "api-reference/endpoint/webhooks/disable",
               "api-reference/endpoint/webhooks/destroy",
               "api-reference/endpoint/webhooks/deliveries",
               "api-reference/endpoint/webhooks/simulate"
+            ]
+          },
+          {
+            "group": "Campaigns",
+            "pages": [
+              "api-reference/endpoint/campaigns/index",
+              "api-reference/endpoint/campaigns/store",
+              "api-reference/endpoint/campaigns/submit",
+              "api-reference/endpoint/campaigns/start",
+              "api-reference/endpoint/campaigns/stop"
+            ]
+          },
+          {
+            "group": "Emails",
+            "pages": [
+              "api-reference/endpoint/emails/send"
+            ]
+          },
+          {
+            "group": "Templates",
+            "pages": [
+              "api-reference/endpoint/templates/index",
+              "api-reference/endpoint/templates/store",
+              "api-reference/endpoint/templates/show",
+              "api-reference/endpoint/templates/destroy"
+            ]
+          },
+          {
+            "group": "Mail Accounts",
+            "pages": [
+              "api-reference/endpoint/mail-accounts/index"
             ]
           },
           {
