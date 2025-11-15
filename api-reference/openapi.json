@@ -2450,7 +2450,7 @@
         "\/webhooks\/simulate": {
             "post": {
                 "operationId": "public.v1.webhooks.simulate",
-                "description": "Returns a sample webhook payload for the specified event type.",
+                "description": "Sends a simulated webhook event to the specified webhook URL and returns both the payload sent and the response received.",
                 "summary": "Simulate a webhook event",
                 "tags": [
                     "Webhooks API"
