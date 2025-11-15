@@ -27,13 +27,19 @@
               "backend/api-authentication",
               "backend/webhooks"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Integrations",
+        "groups": [
           {
-            "group": "AI tools",
+            "group": "n8n",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "integrations/n8n/getting-started",
+              "integrations/n8n/actions-guide",
+              "integrations/n8n/triggers-guide",
+              "integrations/n8n/examples"
             ]
           }
         ]

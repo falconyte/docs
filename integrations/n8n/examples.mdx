@@ -1,0 +1,639 @@
+---
+title: "Workflow Examples"
+description: "Real-world automation patterns using Falconyte and n8n."
+icon: "diagram-project"
+---
+
+Explore practical workflow examples that demonstrate how to integrate Falconyte with n8n and other services. Each example includes a complete workflow description and configuration guidance.
+
+## Example 1: Contact Sync from CRM
+
+**Use Case**: Automatically sync new contacts from your CRM to Falconyte.
+
+**Workflow:**
+
+```
+Webhook Trigger (CRM)
+  → Function: Transform Data
+  → Falconyte: Upsert Contact
+  → IF: Success?
+    → True: Update CRM Record
+    → False: Send Error to Slack
+```
+
+**Configuration:**
+
+1. **Webhook Trigger**: Configure your CRM to send new contact events to n8n
+2. **Function Node**: Transform CRM data to Falconyte format
+   ```javascript
+   return {
+     email: $json.email_address,
+     first_name: $json.given_name,
+     last_name: $json.family_name,
+     phone: $json.phone_number,
+     foreign_id: $json.crm_id,
+     custom_fields: {
+       custom_str_1: $json.company,
+       custom_str_2: $json.job_title,
+       custom_int_1: $json.deal_value
+     },
+     tags: ['crm-import', $json.lead_source]
+   };
+   ```
+3. **Falconyte Action**: Upsert Contact
+4. **IF Node**: Check `{{ $json.ok === true }}`
+5. **Update CRM**: Mark contact as synced in your CRM
+6. **Slack Alert**: Notify team on failures
+
+**Benefits:**
+- Bi-directional sync between systems
+- Automatic contact enrichment
+- Error visibility
+
+---
+
+## Example 2: Event-Driven Lead Scoring
+
+**Use Case**: Automatically track engagement and score leads based on email interactions.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.opened, email.clicked)
+  → Switch: Event Type
+    → email.opened: +5 points
+    → email.clicked: +10 points
+  → HTTP Request: Update Lead Score in Database
+  → IF: Score > 50
+    → Falconyte: Submit Event (lead.created)
+    → Falconyte: Upsert Contact (add "hot-lead" tag)
+    → Slack: Notify Sales Team
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.opened` and `email.clicked`
+2. **Switch Node**: Route by event type
+   ```javascript
+   {{ $json.event }}
+   ```
+3. **Set Node**: Calculate points
+   ```javascript
+   {
+     "contact_id": "{{ $json.payload.contact_id }}",
+     "email": "{{ $json.payload.email }}",
+     "points": {{ $json.event === 'email.clicked' ? 10 : 5 }}
+   }
+   ```
+4. **HTTP Request**: Update your database
+5. **IF Node**: Check if score exceeds threshold
+6. **Falconyte Actions**: Mark as lead and tag appropriately
+7. **Slack**: Alert sales team with contact details
+
+**Benefits:**
+- Real-time lead qualification
+- Automated sales notifications
+- Data-driven scoring
+
+---
+
+## Example 3: Automated Welcome Series
+
+**Use Case**: Trigger a multi-step email sequence when a new contact is added.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.contact.saved)
+  → IF: Has Tag "new-subscriber"
+    → Wait: 5 minutes
+    → Falconyte: Send Email (Welcome #1)
+    → Wait: 2 days
+    → Falconyte: Send Email (Welcome #2)
+    → Wait: 5 days
+    → Falconyte: Send Email (Welcome #3)
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.contact.saved`
+2. **IF Node**: Filter for specific tags
+   ```javascript
+   {{ $json.payload.tags && $json.payload.tags.includes('new-subscriber') }}
+   ```
+3. **Wait Nodes**: Add delays between emails
+4. **Falconyte Email Actions**: Send each email in sequence
+   ```json
+   {
+     "to": "{{ $json.payload.email }}",
+     "template_id": "welcome-email-1-uuid",
+     "template_variables": {
+       "first_name": "{{ $json.payload.first_name }}"
+     }
+   }
+   ```
+
+**Advanced Version**: Add engagement tracking
+```
++ Falconyte Trigger (email.clicked)
+  → IF: Link = "Get Started"
+    → Stop Welcome Series
+    → Start Onboarding Series
+```
+
+**Benefits:**
+- Personalized onboarding
+- Timed email sequences
+- Conditional logic based on engagement
+
+---
+
+## Example 4: Bounce Management
+
+**Use Case**: Automatically handle bounced emails and clean your contact list.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.bounced.hard)
+  → Falconyte: Upsert Contact (add "bounced" tag)
+  → HTTP Request: Mark Invalid in Database
+  → Google Sheets: Log Bounced Email
+  → IF: Bounce Category = "invalid_address"
+    → Falconyte: Unsubscribe Contact
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.bounced.hard` and `email.bounced.soft`
+2. **Falconyte Action**: Tag contact
+   ```json
+   {
+     "email": "{{ $json.payload.email }}",
+     "tags": ["bounced", "{{ $json.payload.bounce_category }}"]
+   }
+   ```
+3. **HTTP Request**: Update your system
+4. **Google Sheets**: Log for audit trail
+5. **IF Node**: Check bounce type
+   ```javascript
+   {{ $json.payload.bounce_category === 'invalid_address' }}
+   ```
+6. **Falconyte Action**: Unsubscribe if hard bounce
+
+**Benefits:**
+- Improved deliverability
+- Automatic list hygiene
+- Audit trail for compliance
+
+---
+
+## Example 5: Multi-Channel Notification
+
+**Use Case**: Send notifications via multiple channels when important events occur.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.sale.created)
+  → Set: Extract Sale Data
+  → Parallel Branches:
+    → Branch 1: Slack Notification
+    → Branch 2: Discord Notification
+    → Branch 3: Email to Sales Team
+    → Branch 4: Update Google Sheets
+    → Branch 5: Log to Database
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.sale.created`
+2. **Set Node**: Prepare data
+   ```javascript
+   {
+     "contact_id": "{{ $json.payload.contact_id }}",
+     "email": "{{ $json.payload.email }}",
+     "amount": {{ $json.payload.amount }},
+     "currency": "{{ $json.payload.currency }}",
+     "timestamp": "{{ $json.timestamp }}"
+   }
+   ```
+3. **Multiple Branches**: Use n8n's parallel execution
+   - **Slack**: Format rich message with sale details
+   - **Discord**: Post to sales channel
+   - **Email**: Send summary to manager
+   - **Google Sheets**: Add row with sale data
+   - **Database**: Log for analytics
+
+**Benefits:**
+- Real-time visibility across tools
+- No missed notifications
+- Centralized logging
+
+---
+
+## Example 6: Unsubscribe Sync Across Platforms
+
+**Use Case**: When someone unsubscribes, remove them from all your marketing tools.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.contact.unsubscribed)
+  → Parallel Branches:
+    → Branch 1: Mailchimp - Unsubscribe
+    → Branch 2: HubSpot - Update Contact
+    → Branch 3: Salesforce - Mark Opted Out
+    → Branch 4: Internal Database - Update Status
+    → Branch 5: Google Sheets - Log Unsubscribe
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.contact.unsubscribed`
+2. **Extract Data**: Get email and reason
+3. **Mailchimp API**: Remove from lists
+4. **HubSpot API**: Update contact properties
+5. **Salesforce API**: Update opt-out status
+6. **Database Update**: Mark in your system
+7. **Google Sheets**: Log for compliance
+
+**Benefits:**
+- GDPR/CAN-SPAM compliance
+- Consistent opt-out status
+- Audit trail
+
+---
+
+## Example 7: Bot Activity Analysis
+
+**Use Case**: Track and analyze bot activity separately from human engagement.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.bot.opened, email.bot.clicked)
+  → Set: Extract Bot Data
+  → HTTP Request: Log to Analytics Database
+  → IF: Bot Score > 0.9
+    → Google Sheets: Flag for Review
+  → Airtable: Add to Bot Patterns Table
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.bot.opened` and `email.bot.clicked`
+2. **Set Node**: Extract analysis data
+   ```javascript
+   {
+     "event": "{{ $json.event }}",
+     "email": "{{ $json.payload.email }}",
+     "bot_score": {{ $json.payload.decision.bot_score }},
+     "reasons": {{ JSON.stringify($json.payload.decision.reasons) }},
+     "user_agent": "{{ $json.payload.user_agent }}",
+     "ip_address": "{{ $json.payload.ip_address }}"
+   }
+   ```
+3. **Database**: Store for pattern analysis
+4. **IF Node**: Flag high-confidence bots
+5. **Airtable**: Build bot pattern database
+
+**Benefits:**
+- Accurate engagement metrics
+- Bot pattern recognition
+- Data quality improvement
+
+---
+
+## Example 8: Webhook Delivery Monitoring
+
+**Use Case**: Monitor webhook health and alert on failures.
+
+**Workflow:**
+
+```
+Cron Trigger (Every 15 minutes)
+  → Falconyte: List Webhooks
+  → Loop: For Each Webhook
+    → Falconyte: Get Deliveries (last 15 min)
+    → Function: Count Failures
+    → IF: Failure Rate > 10%
+      → Slack: Alert Team
+      → PagerDuty: Create Incident
+```
+
+**Configuration:**
+
+1. **Cron Trigger**: Run every 15 minutes
+2. **Falconyte Action**: List all webhooks
+3. **Loop Node**: Iterate through webhooks
+4. **Falconyte Action**: Get recent deliveries with filter
+   ```json
+   {
+     "query": {
+       "condition": "AND",
+       "type": "builder",
+       "rules": [
+         {
+           "column": "status",
+           "operator": "equals",
+           "value": "failed"
+         },
+         {
+           "column": "created_at",
+           "operator": "greater_than",
+           "value": "{{ $now.minus({minutes: 15}).toISO() }}"
+         }
+       ]
+     }
+   }
+   ```
+5. **Function**: Calculate failure rate
+6. **IF Node**: Check threshold
+7. **Alerts**: Notify appropriate channels
+
+**Benefits:**
+- Proactive issue detection
+- Reduced downtime
+- SLA compliance
+
+---
+
+## Example 9: Dynamic List Segmentation
+
+**Use Case**: Automatically segment contacts into lists based on behavior.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.clicked)
+  → IF: URL Contains
+    → "pricing": Add "interested-in-purchase" tag
+    → "blog": Add "content-reader" tag
+    → "demo": Add "demo-interested" tag + Submit lead.created event
+  → Falconyte: Upsert Contact (apply tags)
+  → HTTP Request: Update Segment in External Tool
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.clicked`
+2. **Switch Node**: Route by URL pattern
+   ```javascript
+   {{ $json.payload.url }}
+   ```
+3. **Set Nodes**: Define tags for each segment
+4. **Falconyte Actions**: Apply tags and submit events
+5. **External Tools**: Sync segments to CRM/analytics
+
+**Benefits:**
+- Behavioral segmentation
+- Automatic list management
+- Personalized follow-ups
+
+---
+
+## Example 10: Contact Enrichment Pipeline
+
+**Use Case**: Enrich new contacts with data from multiple sources.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.contact.saved)
+  → Clearbit: Enrich Contact
+  → Hunter.io: Verify Email
+  → FullContact: Get Social Profiles
+  → Function: Merge All Data
+  → Falconyte: Upsert Contact (with enriched data)
+  → IF: Company Size > 50
+    → Falconyte: Add "enterprise" tag
+    → Slack: Notify Enterprise Team
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.contact.saved`
+2. **Clearbit API**: Get company and role data
+3. **Hunter.io API**: Verify email deliverability
+4. **FullContact API**: Get social media profiles
+5. **Function Node**: Merge all enrichment data
+   ```javascript
+   return {
+     email: $json.payload.email,
+     custom_fields: {
+       custom_str_1: $node["Clearbit"].json.company_name,
+       custom_str_2: $node["Clearbit"].json.role,
+       custom_int_1: $node["Clearbit"].json.company_size,
+       custom_str_3: $node["FullContact"].json.linkedin_url
+     },
+     tags: [
+       $node["Hunter"].json.deliverable ? 'verified-email' : 'unverified-email',
+       $node["Clearbit"].json.industry
+     ]
+   };
+   ```
+6. **Falconyte Action**: Update contact with enriched data
+7. **Conditional Logic**: Route based on enrichment results
+
+**Benefits:**
+- Automated data enrichment
+- Better lead qualification
+- Personalization at scale
+
+---
+
+## Example 11: Revenue Attribution
+
+**Use Case**: Track revenue attribution from email campaigns to sales.
+
+**Workflow:**
+
+```
+Falconyte Trigger (email.sale.created)
+  → Function: Extract Campaign Data
+  → PostgreSQL: Insert Sale Record
+  → HTTP Request: Get Campaign Details
+  → Google Analytics: Track Conversion
+  → Data Studio: Update Dashboard
+  → IF: Amount > 1000
+    → Slack: Notify Leadership
+```
+
+**Configuration:**
+
+1. **Falconyte Trigger**: Subscribe to `email.sale.created`
+2. **Function**: Prepare attribution data
+   ```javascript
+   return {
+     sale_id: $json.payload.sale_id,
+     contact_id: $json.payload.contact_id,
+     email: $json.payload.email,
+     amount: $json.payload.amount,
+     currency: $json.payload.currency,
+     campaign_id: $json.payload.campaign_id,
+     campaign_send_id: $json.payload.campaign_send_id,
+     source: $json.payload.source,
+     timestamp: $json.timestamp
+   };
+   ```
+3. **Database**: Store for reporting
+4. **Campaign API**: Fetch campaign metadata
+5. **Analytics**: Track conversion event
+6. **Dashboards**: Update real-time reports
+7. **Notifications**: Alert on high-value sales
+
+**Benefits:**
+- Clear ROI visibility
+- Campaign performance tracking
+- Data-driven optimization
+
+---
+
+## Example 12: Bulk Contact Import
+
+**Use Case**: Import contacts from a CSV file or external database.
+
+**Workflow:**
+
+```
+Schedule Trigger (Daily at 3 AM)
+  → Google Sheets: Read New Contacts
+  → Function: Batch into Groups of 1000
+  → Loop: For Each Batch
+    → Falconyte: Bulk Upsert Contacts
+    → Wait: 1 second (rate limiting)
+  → Function: Count Results
+  → Slack: Send Import Summary
+```
+
+**Configuration:**
+
+1. **Schedule Trigger**: Run during off-peak hours
+2. **Google Sheets**: Read rows where `imported = false`
+3. **Function Node**: Batch contacts
+   ```javascript
+   const contacts = $json.map(row => ({
+     email: row.email,
+     first_name: row.first_name,
+     last_name: row.last_name,
+     phone: row.phone,
+     custom_fields: {
+       custom_str_1: row.company,
+       custom_str_2: row.source
+     }
+   }));
+   
+   // Split into batches of 1000
+   const batches = [];
+   for (let i = 0; i < contacts.length; i += 1000) {
+     batches.push(contacts.slice(i, i + 1000));
+   }
+   
+   return batches.map(batch => ({ contacts: batch }));
+   ```
+4. **Loop Node**: Process each batch
+5. **Falconyte Action**: Bulk Upsert
+6. **Wait Node**: Respect rate limits
+7. **Summary**: Report success/failure counts
+
+**Benefits:**
+- Efficient bulk operations
+- Rate limit management
+- Progress tracking
+
+---
+
+## Tips for Building Workflows
+
+### 1. Error Handling
+
+Always include error handling:
+
+```
+Any Node
+  → Error Trigger
+    → Function: Log Error Details
+    → Slack/Email: Notify Team
+    → Database: Store for Analysis
+```
+
+### 2. Testing
+
+Test workflows incrementally:
+1. Start with **Manual Trigger**
+2. Test each node individually
+3. Use **Execute Node** to debug specific steps
+4. Check n8n execution logs
+
+### 3. Data Validation
+
+Validate data before sending to Falconyte:
+
+```javascript
+// In a Function node
+const email = $json.email;
+
+// Validate email format
+if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  throw new Error(`Invalid email: ${email}`);
+}
+
+// Validate required fields
+if (!$json.first_name) {
+  $json.first_name = 'Unknown';
+}
+
+return $json;
+```
+
+### 4. Idempotency
+
+Prevent duplicate operations:
+
+```javascript
+// Generate unique key
+const idempotencyKey = `${$json.event_type}-${$json.user_id}-${$json.timestamp}`;
+
+// Check if already processed
+const exists = await checkDatabase(idempotencyKey);
+if (exists) {
+  return []; // Skip
+}
+
+// Continue processing...
+```
+
+### 5. Logging
+
+Add logging nodes for debugging:
+
+```
+Any Node
+  → Function: Log to Console
+    → Supabase/Airtable: Store Log Entry
+```
+
+### 6. Performance
+
+Optimize for speed:
+- Use **Respond to Webhook** early in trigger workflows
+- Process heavy operations asynchronously
+- Batch operations when possible
+- Use parallel branches for independent tasks
+
+## Next Steps
+
+- [Install the Falconyte node](/integrations/n8n/getting-started) to start building
+- [Explore all actions](/integrations/n8n/actions-guide) available in the action node
+- [Learn about triggers](/integrations/n8n/triggers-guide) for real-time automation
+- [Check the API reference](/api-reference/introduction) for advanced usage
+
+## Need Help?
+
+Have a workflow idea but not sure how to implement it?
+
+- **Email**: [support@falconyte.com](mailto:support@falconyte.com)
+- **Community**: Join our Discord community
+- **Documentation**: [docs.falconyte.dev](https://docs.falconyte.dev)
+

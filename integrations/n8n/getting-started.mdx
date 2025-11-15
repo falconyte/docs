@@ -1,0 +1,201 @@
+---
+title: "Getting Started with n8n"
+description: "Install and configure the Falconyte n8n node to automate your marketing workflows."
+icon: "rocket"
+---
+
+Falconyte's official n8n community node enables you to automate contact management, event tracking, and webhook integrations directly within your n8n workflows—no custom HTTP requests required.
+
+## What is the Falconyte n8n Node?
+
+The Falconyte n8n integration provides:
+
+- **Action Node**: Manage contacts, submit events, handle unsubscribes, and control webhook lifecycles
+- **Trigger Node**: Automatically receive real-time notifications from Falconyte via webhooks
+
+All operations use your Falconyte API key for authentication and work seamlessly with n8n's visual workflow builder.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+1. **A Falconyte account** - [Sign up](https://app.falconyte.com) if you don't have one
+2. **An n8n instance** - [Self-hosted](https://docs.n8n.io/hosting/) or [n8n Cloud](https://n8n.io/cloud/)
+3. **A Falconyte API key** - Generate one from your dashboard
+
+## Installation
+
+### From n8n Community Store
+
+The easiest way to install the Falconyte node is directly from n8n:
+
+1. Open your n8n instance
+2. Go to **Settings → Community Nodes**
+3. Click **Install a community node**
+4. Enter: `n8n-nodes-falconyte`
+5. Click **Install**
+
+n8n will download and install the latest version automatically.
+
+### Manual Installation (Self-Hosted)
+
+If you're running a self-hosted n8n instance with npm:
+
+```bash
+cd ~/.n8n/nodes
+npm install n8n-nodes-falconyte
+```
+
+Then restart your n8n instance to load the new nodes.
+
+## Create a Falconyte API Key
+
+To authenticate with Falconyte:
+
+1. Log in to the [Falconyte Dashboard](https://app.falconyte.com)
+2. Navigate to **Developer Tools → API Keys**
+3. Click **Create API Key**
+4. Give it a descriptive name (e.g., "n8n Integration")
+5. Copy the generated key immediately—it's only shown once
+
+<Warning>
+Store your API key securely. Falconyte only retains a hashed version, so lost keys cannot be recovered.
+</Warning>
+
+## Configure Credentials in n8n
+
+After installing the node, set up your credentials:
+
+1. In n8n, create a new workflow or open an existing one
+2. Add a **Falconyte** or **Falconyte Trigger** node
+3. Click **Create New Credentials**
+4. Fill in the credential form:
+   - **API Key**: Paste your Falconyte API key
+   - **Base URL** (optional): Leave as default (`https://api.falconyte.com`) unless using a staging environment
+5. Click **Test Connection** to verify
+
+The connection test sends a request to `/public/v1/ping` to validate your credentials. A successful test confirms your API key is valid and has proper permissions.
+
+## Your First Workflow
+
+Let's create a simple workflow that adds a contact to Falconyte:
+
+### Step 1: Add a Manual Trigger
+
+1. Add a **Manual Trigger** node to start your workflow
+2. This lets you test the workflow by clicking "Execute Workflow"
+
+### Step 2: Add the Falconyte Node
+
+1. Click the **+** button to add a new node
+2. Search for **Falconyte** and select it
+3. Configure the node:
+   - **Credential**: Select your Falconyte credentials
+   - **Resource**: Contact
+   - **Operation**: Upsert
+   - **Email**: Enter a test email (e.g., `test@example.com`)
+   - **First Name**: John
+   - **Last Name**: Doe
+
+### Step 3: Execute and Verify
+
+1. Click **Execute Workflow** at the bottom of the screen
+2. Check the output panel—you should see the created/updated contact data
+3. Verify in the Falconyte Dashboard under **Contacts**
+
+```json
+{
+  "ok": true,
+  "contact": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "test@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "created_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+## Quick Examples
+
+### Submit an Event
+
+Track custom events like leads or sales:
+
+- **Resource**: Event
+- **Operation**: Submit Event
+- **Event Name**: `lead.created`
+- **Email**: `{{$json.email}}`
+- **Payload**: Custom data as JSON
+
+### Unsubscribe a Contact
+
+Remove contacts from your email list:
+
+- **Resource**: Unsubscribe
+- **Operation**: Unsubscribe
+- **Email**: `user@example.com`
+- **Reason** (optional): `user_request`
+
+### Receive Webhook Events (Trigger)
+
+Use the **Falconyte Trigger** node to react to events:
+
+1. Add a **Falconyte Trigger** node
+2. Select events to listen for (e.g., `email.opened`, `email.clicked`)
+3. The trigger automatically creates and manages the webhook for you
+4. Connect downstream nodes to process events
+
+## Authentication Details
+
+All requests include:
+
+- **Header**: `x-api-key: YOUR_API_KEY`
+- **User-Agent**: `Falconyte-n8n/1.0`
+- **Content-Type**: `application/json`
+
+Your API key authenticates against the `/public/v1` namespace and inherits your team's permissions and rate limits.
+
+## Troubleshooting
+
+### Connection Test Fails
+
+**Error**: `401 Unauthorized` or `UNAUTHENTICATED`
+
+- Verify your API key is correct and hasn't been revoked
+- Check that the key hasn't expired (if you set an expiration date)
+- Ensure the Base URL is correct (`https://api.falconyte.com`)
+
+### Node Not Appearing
+
+If the Falconyte node doesn't appear after installation:
+
+1. Restart your n8n instance completely
+2. Clear your browser cache
+3. For self-hosted: verify the package is in `~/.n8n/nodes` or your custom nodes directory
+4. Check the n8n logs for installation errors
+
+### Rate Limiting
+
+**Error**: `429 Too Many Requests`
+
+- Your API key has hit rate limits
+- Implement delays between operations using **Wait** nodes
+- Consider upgrading your Falconyte plan for higher limits
+
+## Next Steps
+
+Now that you're set up:
+
+- [Explore all available actions](/integrations/n8n/actions-guide) - Learn about contacts, events, webhooks, and more
+- [Set up webhook triggers](/integrations/n8n/triggers-guide) - Receive real-time notifications from Falconyte
+- [View workflow examples](/integrations/n8n/examples) - Get inspired by real-world automation patterns
+
+## Support
+
+Need help?
+
+- **Documentation**: [docs.falconyte.dev](https://docs.falconyte.dev)
+- **API Reference**: [API Documentation](/api-reference/introduction)
+- **Email**: [support@falconyte.com](mailto:support@falconyte.com)
+

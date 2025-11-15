@@ -1,0 +1,617 @@
+---
+title: "Action Node Operations"
+description: "Complete guide to all Falconyte action node operations in n8n."
+icon: "wand-magic-sparkles"
+---
+
+The Falconyte action node provides comprehensive control over your marketing automation. All operations authenticate with your API key and execute against the `/public/v1` namespace.
+
+## Available Resources
+
+The action node is organized by resource type:
+
+- [Contact](#contact-operations) - Create and update contacts
+- [Event](#event-operations) - Submit lifecycle events and view decisions
+- [Email](#email-operations) - Send transactional emails
+- [Unsubscribe](#unsubscribe-operations) - Manage opt-outs
+- [Webhook](#webhook-operations) - Control webhook subscriptions
+
+## Contact Operations
+
+### Upsert Contact
+
+Creates a new contact or updates an existing one based on email address.
+
+**Configuration:**
+- **Resource**: Contact
+- **Operation**: Upsert
+
+**Required Fields:**
+- `email` - Valid email address
+
+**Optional Fields:**
+- `first_name` - Contact's first name
+- `last_name` - Contact's last name
+- `phone` - Phone number (e.g., `+1234567890`)
+- `foreign_id` - Your external system ID
+- `country_code` - ISO country code (e.g., `US`, `GB`)
+- `custom_fields` - JSON object for custom attributes
+- `tags` - JSON array of tag strings
+
+**Custom Fields:**
+
+Falconyte supports typed custom fields:
+- `custom_str_1` through `custom_str_10` - Text values
+- `custom_int_1` through `custom_int_10` - Integer values
+- `custom_dec_1` through `custom_dec_10` - Decimal values
+- `custom_datetime_1` through `custom_datetime_10` - Date/time values
+- `custom_bool_1` through `custom_bool_10` - Boolean values
+
+**Example Configuration:**
+
+```json
+{
+  "email": "john.doe@example.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone": "+1234567890",
+  "foreign_id": "ext-12345",
+  "country_code": "US",
+  "custom_fields": {
+    "custom_int_1": 42,
+    "custom_bool_1": true,
+    "custom_str_1": "Premium"
+  },
+  "tags": ["vip", "newsletter"]
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "contact": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "john.doe@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+### Bulk Upsert Contacts
+
+Create or update multiple contacts in a single operation (up to 1,000 contacts).
+
+**Configuration:**
+- **Resource**: Contact
+- **Operation**: Bulk Upsert
+
+**Required Fields:**
+- `contacts` - JSON array of contact objects
+
+**Optional Fields:**
+- `tags` - JSON array applied to all contacts
+
+**Example Configuration:**
+
+```json
+{
+  "contacts": [
+    {
+      "email": "user1@example.com",
+      "first_name": "Alice"
+    },
+    {
+      "email": "user2@example.com",
+      "first_name": "Bob",
+      "custom_fields": {
+        "custom_str_1": "Gold"
+      }
+    }
+  ],
+  "tags": ["bulk-import", "2024-q1"]
+}
+```
+
+**Limits:**
+- Maximum 1,000 contacts per request
+- For larger imports, split into multiple operations
+
+## Event Operations
+
+### Submit Event
+
+Track lifecycle events for contacts, triggering automated campaigns and journeys.
+
+**Configuration:**
+- **Resource**: Event
+- **Operation**: Submit Event
+
+**Required Fields:**
+- `event_name` - One of: `contact.saved`, `contact.unsubscribed`, `lead.created`, `sale.created`
+- Either `email` OR `idempotency_key` (UUID)
+
+**Optional Fields:**
+- `occurred_at` - Event timestamp (format: `Y-m-d H:i:s`), defaults to current time
+- `payload` - JSON object with additional event data
+
+**Event Types:**
+
+| Event Name | Description | Idempotency Key Required? |
+|------------|-------------|---------------------------|
+| `contact.saved` | Contact created/updated | Optional |
+| `contact.unsubscribed` | Contact opted out | Optional |
+| `lead.created` | Lead conversion | Recommended |
+| `sale.created` | Sale conversion | Recommended |
+
+<Info>
+Use `idempotency_key` for `lead.created` and `sale.created` to prevent duplicate tracking if your workflow retries.
+</Info>
+
+**Example Configuration:**
+
+```json
+{
+  "event_name": "lead.created",
+  "email": "prospect@example.com",
+  "idempotency_key": "lead-12345-2024-01-15",
+  "occurred_at": "2024-01-15 14:30:00",
+  "payload": {
+    "source": "landing_page",
+    "campaign": "spring_promo",
+    "value": 100
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "event_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### Get Event
+
+Retrieve details about a previously submitted event.
+
+**Configuration:**
+- **Resource**: Event
+- **Operation**: Get Event
+- **Event ID**: UUID from submit response
+
+### Get Event Decisions
+
+View campaign decisions triggered by an event (which campaigns were activated).
+
+**Configuration:**
+- **Resource**: Event
+- **Operation**: Get Decisions
+- **Event ID**: UUID from submit response
+
+**Response Example:**
+
+```json
+{
+  "ok": true,
+  "decisions": [
+    {
+      "campaign_id": "550e8400-e29b-41d4-a716-446655440000",
+      "campaign_name": "Welcome Series",
+      "triggered_at": "2024-01-15T10:30:00Z"
+    }
+  ]
+}
+```
+
+## Email Operations
+
+### Send Email
+
+Send transactional emails directly through Falconyte.
+
+**Configuration:**
+- **Resource**: Email
+- **Operation**: Send
+
+**Required Fields:**
+- `to` - Recipient email address
+- `subject` - Email subject line
+- Either `html` OR `template_id`
+
+**Optional Fields:**
+- `from_email` - Sender email (uses default mail account if omitted)
+- `from_name` - Sender name
+- `reply_to` - Reply-to address
+- `template_variables` - JSON object for template placeholders
+
+**Example with HTML:**
+
+```json
+{
+  "to": "customer@example.com",
+  "subject": "Your Order Confirmation",
+  "from_name": "Acme Store",
+  "html": "<h1>Thanks for your order!</h1><p>We're processing it now.</p>"
+}
+```
+
+**Example with Template:**
+
+```json
+{
+  "to": "customer@example.com",
+  "template_id": "550e8400-e29b-41d4-a716-446655440000",
+  "template_variables": {
+    "first_name": "John",
+    "order_number": "12345"
+  }
+}
+```
+
+## Unsubscribe Operations
+
+### Unsubscribe Single Contact
+
+Mark a contact as unsubscribed from all marketing emails.
+
+**Configuration:**
+- **Resource**: Unsubscribe
+- **Operation**: Unsubscribe
+
+**Required Fields:**
+- `email` - Contact email address
+
+**Optional Fields:**
+- `reason` - Unsubscribe reason (e.g., `user_request`, `spam_complaint`)
+
+**Example:**
+
+```json
+{
+  "email": "optout@example.com",
+  "reason": "user_request"
+}
+```
+
+### Bulk Unsubscribe
+
+Unsubscribe multiple contacts at once (up to 1,000).
+
+**Configuration:**
+- **Resource**: Unsubscribe
+- **Operation**: Bulk Unsubscribe
+
+**Required Fields:**
+- `emails` - JSON array of email addresses
+
+**Optional Fields:**
+- `reason` - Applied to all contacts
+
+**Example:**
+
+```json
+{
+  "emails": [
+    "user1@example.com",
+    "user2@example.com",
+    "user3@example.com"
+  ],
+  "reason": "bulk_cleanup"
+}
+```
+
+### List Unsubscribes
+
+Retrieve paginated list of unsubscribed contacts.
+
+**Configuration:**
+- **Resource**: Unsubscribe
+- **Operation**: List Unsubscribes
+
+**Optional Fields:**
+- `page` - Page number (default: 1)
+- `per_page` - Results per page (default: 50, max: 100)
+- `search` - Filter by email address
+
+## Webhook Operations
+
+### List Webhooks
+
+Retrieve all webhooks for your team.
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: List
+
+**Optional Fields:**
+- `page` - Page number
+- `per_page` - Results per page
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "url": "https://example.com/webhook",
+      "events": ["email.sent", "email.opened"],
+      "is_enabled": true,
+      "source": "n8n",
+      "locked": true
+    }
+  ]
+}
+```
+
+### Get Webhook
+
+Retrieve details for a specific webhook.
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: Get
+- **Webhook ID**: UUID
+
+### Create Webhook
+
+Register a new webhook subscription.
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: Create
+
+**Required Fields:**
+- `url` - HTTPS endpoint to receive events
+- `events` - JSON array of event names (at least one required)
+
+**Optional Fields:**
+- `is_enabled` - Enable immediately (default: true)
+- `source` - Integration identifier (`n8n`, `zapier`, `make`, `internal`)
+
+<Warning>
+Setting `source` locks the webhook from manual edits in the Falconyte dashboard. Only use this for integration-managed webhooks.
+</Warning>
+
+**Available Webhook Events:**
+
+- `email.sent`
+- `email.delivered`
+- `email.bounced.soft`
+- `email.bounced.hard`
+- `email.deferred`
+- `email.opened`
+- `email.clicked`
+- `email.bot.opened`
+- `email.bot.clicked`
+- `email.replied`
+- `email.contact.saved`
+- `email.contact.unsubscribed`
+- `email.lead.created`
+- `email.sale.created`
+
+**Example:**
+
+```json
+{
+  "url": "https://myapp.com/falconyte/webhook",
+  "events": ["email.sent", "email.opened", "email.clicked"],
+  "is_enabled": true,
+  "source": "n8n"
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "webhook": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "url": "https://myapp.com/falconyte/webhook",
+    "secret": "whsec_abc123...",
+    "events": ["email.sent", "email.opened", "email.clicked"],
+    "is_enabled": true
+  }
+}
+```
+
+<Warning>
+Store the `secret` securely—it's only returned once and is needed to verify webhook signatures.
+</Warning>
+
+### Update Webhook
+
+Modify an existing webhook's configuration.
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: Update
+- **Webhook ID**: UUID
+
+**Optional Fields:**
+- `url` - New endpoint URL
+- `events` - Updated event list
+- `is_enabled` - Enable/disable state
+- `source` - Lock/unlock status
+
+### Enable Webhook
+
+Activate a disabled webhook.
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: Enable
+- **Webhook ID**: UUID
+
+### Disable Webhook
+
+Pause webhook deliveries without deleting the subscription.
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: Disable
+- **Webhook ID**: UUID
+
+### List Deliveries
+
+View delivery history for a webhook (successes, failures, retries).
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: List Deliveries
+- **Webhook ID**: UUID
+
+**Optional Fields:**
+- `page` - Page number
+- `per_page` - Results per page
+- `query` - Advanced filter (JSON query builder format)
+- `columns` - Specific columns to return
+
+**Example Query Filter:**
+
+```json
+{
+  "query": {
+    "condition": "AND",
+    "type": "builder",
+    "rules": [
+      {
+        "column": "status",
+        "operator": "equals",
+        "value": "failed"
+      }
+    ]
+  },
+  "columns": ["status", "response_code", "attempts", "created_at"]
+}
+```
+
+### Simulate Webhook Event
+
+Generate a test payload for development and debugging.
+
+**Configuration:**
+- **Resource**: Webhook
+- **Operation**: Simulate
+
+**Required Fields:**
+- `event` - Event name to simulate
+
+**Optional Fields:**
+- `webhook_id` - Send to specific webhook (omit for sample payload only)
+
+**Example:**
+
+```json
+{
+  "event": "email.sent"
+}
+```
+
+## Error Handling
+
+### Common Error Codes
+
+| Status | Code | Description |
+|--------|------|-------------|
+| `401` | `UNAUTHENTICATED` | Invalid or missing API key |
+| `403` | `FORBIDDEN` | Insufficient permissions |
+| `404` | `NOT_FOUND` | Resource doesn't exist |
+| `422` | `VALIDATION_ERROR` | Invalid input data |
+| `429` | `RATE_LIMIT_EXCEEDED` | Too many requests |
+
+### Validation Errors (422)
+
+When validation fails, the response includes detailed field-level errors:
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "The given data was invalid.",
+    "errors": {
+      "email": ["The email field is required."],
+      "event_name": ["The selected event name is invalid."]
+    }
+  }
+}
+```
+
+### Handling Errors in n8n
+
+Use n8n's error handling features:
+
+1. **Continue On Fail**: Enable in node settings to prevent workflow stoppage
+2. **Error Trigger**: Add an **Error Trigger** node to catch and handle failures
+3. **IF Node**: Check for `ok: false` in responses and branch accordingly
+
+**Example Error Check:**
+
+```javascript
+// In an IF node, check the response
+{{ $json.ok === true }}
+```
+
+## Rate Limits
+
+API keys inherit your team's rate limits:
+
+- **Default**: 100 requests per minute
+- **Bulk operations**: Count as 1 request regardless of size
+- **Webhook deliveries**: Not counted toward your limit
+
+If you hit limits, n8n will receive a `429` response with a `Retry-After` header indicating when to retry.
+
+## Best Practices
+
+### 1. Use Bulk Operations
+
+When processing multiple items, use bulk endpoints:
+- Bulk Upsert for contacts (up to 1,000)
+- Bulk Unsubscribe for opt-outs (up to 1,000)
+
+### 2. Implement Idempotency
+
+For critical events like leads and sales, use `idempotency_key` to prevent duplicates:
+
+```javascript
+// Generate from unique identifiers
+`lead-${$json.order_id}-${$json.timestamp}`
+```
+
+### 3. Handle Failures Gracefully
+
+- Enable "Continue On Fail" for non-critical operations
+- Use **Error Trigger** nodes to log failures
+- Implement retry logic with **Wait** nodes
+
+### 4. Validate Data First
+
+Add **IF** or **Function** nodes to validate data before calling Falconyte:
+- Check email format
+- Ensure required fields are present
+- Validate enum values (event names)
+
+### 5. Monitor Webhook Deliveries
+
+Periodically query webhook deliveries to catch failures:
+- Use **Cron** trigger for scheduled checks
+- Filter for `status: failed`
+- Alert or retry as needed
+
+## Next Steps
+
+- [Set up webhook triggers](/integrations/n8n/triggers-guide) to receive events from Falconyte
+- [Explore workflow examples](/integrations/n8n/examples) for common automation patterns
+- [View API reference](/api-reference/introduction) for detailed endpoint documentation
+

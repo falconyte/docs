@@ -1,0 +1,572 @@
+---
+title: "Webhook Triggers"
+description: "Receive real-time notifications from Falconyte using the trigger node."
+icon: "bolt"
+---
+
+The Falconyte Trigger node automatically provisions and manages webhooks, allowing your n8n workflows to react to events in real-time—no manual webhook configuration required.
+
+## How Triggers Work
+
+The Falconyte Trigger node handles the entire webhook lifecycle:
+
+1. **Activation**: When you activate the workflow, the trigger automatically creates (or updates) a webhook subscription in Falconyte
+2. **Delivery**: Falconyte sends events to n8n as they occur
+3. **Verification**: The trigger validates HMAC signatures to ensure authenticity
+4. **Deactivation**: When you deactivate the workflow, the webhook remains but can be managed through the action node
+
+<Info>
+Webhooks created by the trigger include `"source": "n8n"`, which locks them from manual editing in the Falconyte dashboard to prevent accidental changes.
+</Info>
+
+## Setting Up a Trigger
+
+### Basic Configuration
+
+1. Add a **Falconyte Trigger** node to your workflow
+2. Select your **Falconyte API credentials**
+3. Choose the **events** you want to receive
+4. **Save and activate** the workflow
+
+That's it! The trigger handles webhook creation, signature verification, and payload delivery automatically.
+
+### Event Selection
+
+Select one or more events to subscribe to:
+
+**Email Delivery Events:**
+- `email.sent` - Email successfully sent from your account
+- `email.delivered` - Email delivered to recipient's mail server
+- `email.deferred` - Delivery temporarily deferred by recipient server
+- `email.bounced.soft` - Temporary bounce (mailbox full, server unavailable)
+- `email.bounced.hard` - Permanent bounce (invalid address, domain doesn't exist)
+
+**Email Engagement Events:**
+- `email.opened` - Recipient opened the email (human, bot-filtered)
+- `email.clicked` - Recipient clicked a link (human, bot-filtered)
+- `email.replied` - Recipient replied to the email
+
+**Bot Detection Events:**
+- `email.bot.opened` - Bot or automated system opened the email
+- `email.bot.clicked` - Bot or automated system clicked a link
+
+**Contact & Business Events:**
+- `email.contact.saved` - Contact created or updated
+- `email.contact.unsubscribed` - Contact opted out
+- `email.lead.created` - Lead conversion tracked
+- `email.sale.created` - Sale conversion tracked
+
+<Tip>
+Start with the events you need most. You can add more events later by editing and reactivating the workflow.
+</Tip>
+
+## Webhook Payload Structure
+
+All webhook deliveries follow this standard format:
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "event": "email.sent",
+  "team_id": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "payload": {
+    // Event-specific data (see below)
+  }
+}
+```
+
+**Common Fields:**
+- `id` - Unique delivery ID (UUID)
+- `event` - Event name
+- `team_id` - Your team's UUID
+- `timestamp` - When the event occurred (ISO 8601)
+- `payload` - Event-specific data
+
+### Event-Specific Payloads
+
+#### email.sent
+
+```json
+{
+  "payload": {
+    "email_send_log_id": "550e8400-...",
+    "contact_id": "550e8400-...",
+    "email": "john.doe@example.com",
+    "subject": "Welcome to our platform",
+    "sent_at": "2024-01-15T10:30:00Z",
+    "mail_server_id": "550e8400-...",
+    "campaign_id": "550e8400-...",
+    "campaign_send_id": "550e8400-..."
+  }
+}
+```
+
+#### email.opened
+
+```json
+{
+  "payload": {
+    "email_send_log_id": "550e8400-...",
+    "contact_id": "550e8400-...",
+    "email": "john.doe@example.com",
+    "opened_at": "2024-01-15T10:30:20Z",
+    "ip_address": "192.168.1.1",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)...",
+    "country_code": "US"
+  }
+}
+```
+
+#### email.clicked
+
+```json
+{
+  "payload": {
+    "email_send_log_id": "550e8400-...",
+    "contact_id": "550e8400-...",
+    "email": "john.doe@example.com",
+    "clicked_at": "2024-01-15T10:30:25Z",
+    "url": "https://example.com/product",
+    "ip_address": "192.168.1.1",
+    "user_agent": "Mozilla/5.0...",
+    "country_code": "US",
+    "short_link_id": "550e8400-..."
+  }
+}
+```
+
+#### email.bounced.hard
+
+```json
+{
+  "payload": {
+    "email_send_log_id": "550e8400-...",
+    "contact_id": "550e8400-...",
+    "email": "invalid@example.com",
+    "bounced_at": "2024-01-15T10:30:10Z",
+    "bounce_reason": "Email address does not exist",
+    "bounce_category": "invalid_address",
+    "message_id": "<message-id@example.com>",
+    "diagnostic": "550 5.1.1 User unknown"
+  }
+}
+```
+
+#### email.bot.opened
+
+```json
+{
+  "payload": {
+    "email_send_log_id": "550e8400-...",
+    "contact_id": "550e8400-...",
+    "email": "john.doe@example.com",
+    "opened_at": "2024-01-15T10:30:20Z",
+    "ip_address": "192.168.1.1",
+    "user_agent": "Mozilla/5.0 (compatible; bot/1.0)",
+    "country_code": "US",
+    "decision": {
+      "is_bot": true,
+      "bot_score": 0.95,
+      "reasons": [
+        "Automated user agent detected",
+        "Suspicious IP pattern"
+      ]
+    }
+  }
+}
+```
+
+#### email.contact.saved
+
+```json
+{
+  "payload": {
+    "contact_id": "550e8400-...",
+    "email": "john.doe@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "phone": "+1234567890",
+    "foreign_id": "ext-123",
+    "country_code": "US",
+    "created_at": "2024-01-15T10:30:35Z",
+    "updated_at": "2024-01-15T10:30:35Z"
+  }
+}
+```
+
+#### email.lead.created
+
+```json
+{
+  "payload": {
+    "lead_id": "550e8400-...",
+    "contact_id": "550e8400-...",
+    "email": "john.doe@example.com",
+    "created_at": "2024-01-15T10:30:45Z",
+    "source": "email_campaign",
+    "campaign_id": "550e8400-...",
+    "campaign_send_id": "550e8400-..."
+  }
+}
+```
+
+#### email.sale.created
+
+```json
+{
+  "payload": {
+    "sale_id": "550e8400-...",
+    "contact_id": "550e8400-...",
+    "email": "john.doe@example.com",
+    "created_at": "2024-01-15T10:30:50Z",
+    "amount": 99.99,
+    "currency": "USD",
+    "source": "email_campaign",
+    "campaign_id": "550e8400-...",
+    "campaign_send_id": "550e8400-..."
+  }
+}
+```
+
+## Security & Verification
+
+### HMAC Signature Verification
+
+Every webhook delivery includes an `X-FY-Signature` header:
+
+```
+X-FY-Signature: t=1705315800,v1=abc123...
+```
+
+The trigger **automatically verifies** this signature before processing events. Invalid signatures return `403 Forbidden` and don't trigger your workflow.
+
+**Signature Format:**
+- `t` - Unix timestamp (seconds since epoch)
+- `v1` - HMAC-SHA256 hash of `${timestamp}.${body}` using the webhook secret
+
+### Manual Verification (If Needed)
+
+If you're building custom webhook receivers outside n8n:
+
+**Node.js:**
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhookSignature(signature, secret, body, timestamp) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(`${timestamp}.${body}`)
+    .digest('hex');
+  
+  return signature === expectedSignature;
+}
+
+// Parse the header
+const [timestampPart, hashPart] = signatureHeader.split(',');
+const timestamp = timestampPart.split('=')[1];
+const receivedHash = hashPart.split('=')[1];
+
+const isValid = verifyWebhookSignature(
+  receivedHash,
+  webhookSecret,
+  requestBody,
+  timestamp
+);
+```
+
+**PHP:**
+
+```php
+function verifyWebhookSignature(
+    string $signature,
+    string $secret,
+    string $body,
+    int $timestamp
+): bool {
+    $expectedSignature = hash_hmac('sha256', "{$timestamp}.{$body}", $secret);
+    return hash_equals($expectedSignature, $signature);
+}
+
+// Parse the header
+[$timestampPart, $hashPart] = explode(',', $signatureHeader);
+$timestamp = (int) str_replace('t=', '', trim($timestampPart));
+$receivedHash = str_replace('v1=', '', trim($hashPart));
+
+$isValid = verifyWebhookSignature($receivedHash, $secret, $body, $timestamp);
+```
+
+### Additional Security Headers
+
+Each webhook delivery also includes:
+
+- `X-FY-Origin: webhook` - Identifies the request source
+- `User-Agent: Falconyte/1.0` - Falconyte's user agent
+- `Content-Type: application/json` - Always JSON payloads
+
+## Webhook Management
+
+### Automatic Lifecycle
+
+The trigger manages webhooks automatically:
+
+**On Activation:**
+1. Checks if a webhook already exists for this workflow
+2. Creates a new webhook or updates the existing one
+3. Stores the webhook secret securely
+4. Begins receiving events
+
+**On Reactivation:**
+- Updates the event subscription list
+- Preserves the existing webhook and secret
+- No downtime in event delivery
+
+**On Deactivation:**
+- The webhook remains in Falconyte (you can reactivate later)
+- No events are delivered to the workflow
+
+### Integration-Managed Webhooks
+
+Webhooks created by the trigger include:
+
+```json
+{
+  "source": "n8n",
+  "locked": true
+}
+```
+
+This means:
+- They appear with a **managed badge** in the Falconyte dashboard
+- They're **read-only** in the dashboard (can't be edited manually)
+- Prevents accidental changes that would break your workflows
+- Can only be modified by reactivating the trigger with new settings
+
+### Manual Management
+
+You can still manage these webhooks programmatically using the [action node](/integrations/n8n/actions-guide#webhook-operations):
+
+- **List webhooks** - View all active webhooks
+- **Enable/Disable** - Control delivery without deleting
+- **View deliveries** - Check delivery history and failures
+- **Delete** - Remove the webhook entirely
+
+## Retry & Delivery
+
+### Retry Schedule
+
+If your workflow is unavailable or returns a non-2xx status, Falconyte retries with exponential backoff:
+
+| Attempt | Delay |
+|---------|-------|
+| 1 | Immediate |
+| 2 | 30 seconds |
+| 3 | 2 minutes |
+| 4 | 10 minutes |
+| 5 | 30 minutes |
+| 6 | 2 hours |
+| 7 | 6 hours |
+
+After 7 failed attempts, the delivery is marked as **permanently failed**.
+
+### Delivery Logs
+
+All delivery attempts are logged and accessible via:
+
+1. **Falconyte Dashboard**: Developer Tools → Webhooks → Deliveries
+2. **Action Node**: Use "List Deliveries" operation
+3. **API**: `GET /public/v1/webhooks/{id}/deliveries`
+
+Each log includes:
+- Event name and payload
+- HTTP response code
+- Response body
+- Number of attempts
+- Timestamps
+
+## Best Practices
+
+### 1. Handle Duplicate Deliveries
+
+Webhooks may be retried, so make your workflow **idempotent**:
+
+```javascript
+// In a Function node, check if you've processed this event
+const eventId = $json.id;
+const alreadyProcessed = await checkDatabase(eventId);
+
+if (alreadyProcessed) {
+  return []; // Skip processing
+}
+
+return $json; // Continue workflow
+```
+
+### 2. Respond Quickly
+
+Your workflow should return a 2xx status within **5 seconds**:
+
+- Save the payload to a database immediately
+- Process heavy operations asynchronously
+- Use **Respond to Webhook** node early in the workflow
+
+### 3. Store Event IDs
+
+Track processed events by their `id` field:
+
+```javascript
+// Store in your database
+{
+  "falconyte_event_id": "550e8400-e29b-41d4-a716-446655440000",
+  "processed_at": "2024-01-15T10:30:00Z",
+  "status": "completed"
+}
+```
+
+### 4. Filter Events in the Workflow
+
+Not all events may need the same processing. Use **Switch** or **IF** nodes:
+
+```javascript
+// Switch on event type
+{{ $json.event }}
+
+// Cases:
+// - email.opened → Track engagement
+// - email.bounced.hard → Remove contact
+// - email.clicked → Award points
+```
+
+### 5. Monitor Delivery Failures
+
+Set up a scheduled workflow to check for failed deliveries:
+
+1. **Cron Trigger**: Every hour
+2. **Falconyte Action**: List Deliveries (filter for `status: failed`)
+3. **IF Node**: Check if count > threshold
+4. **Send Alert**: Notify your team
+
+### 6. Use Contact IDs
+
+Most events include both `email` and `contact_id`. Prefer `contact_id` for lookups:
+
+```javascript
+// More reliable than email (which can change)
+const contactId = $json.payload.contact_id;
+```
+
+### 7. Handle Bot Events Separately
+
+Bot events include analysis data. Process them differently:
+
+```javascript
+if ($json.event === 'email.bot.opened') {
+  // Log for analytics but don't count as engagement
+  await logBotActivity($json.payload);
+} else if ($json.event === 'email.opened') {
+  // Real human engagement
+  await updateEngagementScore($json.payload.contact_id);
+}
+```
+
+## Rate Limits
+
+Webhook deliveries are **not rate-limited** by Falconyte, but your n8n instance may have limits:
+
+- **n8n Cloud**: Check your plan's webhook execution limits
+- **Self-hosted**: Limited by your server capacity
+
+Ensure your workflows can handle the expected event volume.
+
+## Troubleshooting
+
+### Trigger Not Receiving Events
+
+**Checklist:**
+1. Is the workflow **activated**? (Green indicator in n8n)
+2. Are events being generated in Falconyte? (Check dashboard activity)
+3. Is the webhook **enabled**? (Use action node to check)
+4. Check delivery logs for errors (use "List Deliveries" operation)
+
+### Signature Verification Failures
+
+**Error**: `403 Forbidden` with "Invalid signature"
+
+**Causes:**
+- Webhook secret changed (reactivate the trigger)
+- Request not from Falconyte (security threat)
+- Request was modified in transit (MITM attack)
+
+**Solution:**
+- Deactivate and reactivate the workflow to refresh the secret
+- Ensure your n8n instance URL is correct and accessible
+
+### Duplicate Events
+
+**Issue**: Receiving the same event multiple times
+
+**Reasons:**
+- Your workflow returned a non-2xx status (triggering retries)
+- Workflow took > 30 seconds (timeout, then retry)
+- Network issues (Falconyte didn't receive your 2xx response)
+
+**Solution:**
+- Implement idempotency checks (see Best Practices #1)
+- Use **Respond to Webhook** node early
+- Process heavy operations asynchronously
+
+### Missing Events
+
+**Issue**: Expected events not arriving
+
+**Checklist:**
+1. Is the event type in your subscription list?
+2. Is the webhook enabled?
+3. Check delivery logs for 2xx responses
+4. Verify the webhook URL matches your n8n webhook URL
+
+## Advanced Usage
+
+### Conditional Processing
+
+Process events based on contact attributes:
+
+```javascript
+// In a Function node
+const email = $json.payload.email;
+
+// Only process VIP contacts
+if (email.includes('@vip.com') || $json.payload.custom_str_1 === 'VIP') {
+  return $json;
+}
+
+return []; // Skip
+```
+
+### Multi-Tenant Workflows
+
+If you manage multiple Falconyte teams:
+
+1. Create separate credentials for each team
+2. Create separate trigger workflows for each team
+3. Use **team_id** in the payload to route data correctly
+
+### Combining Triggers and Actions
+
+Create sophisticated automations:
+
+```
+Falconyte Trigger (email.clicked)
+  → IF: Link contains "pricing"
+  → Falconyte Action: Submit Event (lead.created)
+  → Falconyte Action: Upsert Contact (add "hot-lead" tag)
+  → Send to Slack
+```
+
+## Next Steps
+
+- [View workflow examples](/integrations/n8n/examples) for complete automation patterns
+- [Explore action operations](/integrations/n8n/actions-guide) to respond to webhook events
+- [Read webhook API docs](/api-reference/endpoint/webhooks/index) for advanced webhook management
+
